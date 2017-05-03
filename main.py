@@ -17,7 +17,7 @@ if '--fast' in sys.argv:
 
 modules = {}
 for m in modulenames:
-    modules[m] = importlib.import_module(m)
+    modules[m] = importlib.import_module('randos.' + m)
 
 rands = []
 for name, m in sorted(modules.items()):
