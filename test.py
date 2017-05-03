@@ -4,7 +4,7 @@ from multiprocessing import Pool, cpu_count
 from analysis import analyze
 
 modulenames = '''
-nes fullrandom flatbag foreverbag deepbag tap bag bag2
+nes fullrandom flatbag foreverbag deepbag tap ti bag bag2
 '''.split()
 
 count = 10000
