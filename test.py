@@ -1,13 +1,17 @@
 #!/usr/bin/python2
-import importlib
+import importlib, re, sys
 from multiprocessing import Pool, cpu_count
+
 from analysis import analyze
+import compare
 
 modulenames = '''
 nes fullrandom flatbag foreverbag deepbag tap ti bag bag2
 '''.split()
 
-count = 10000
+count = 100000
+if '--fast' in sys.argv:
+    count = 10000
 
 # end config
 
@@ -48,5 +52,9 @@ for t in m:
     name, a = t
     print name
     for k, v in sorted(a.items()):
-        print '    %s: %s' % (k, v)
+        if not re.search(r'_[jiltsoz]$', k):
+            print '    %s: %s' % (k, v)
+            compare.addelement(name, k, v)
     print
+
+compare.similarity()

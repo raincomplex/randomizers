@@ -25,12 +25,17 @@ def droughts(seq):
         #a['avgdrought_' + c] = sum(d) / float(len(d))
         a['meddrought_' + c] = d[len(d) / 2]
         a['repchance_' + c] = d.count(0) / float(len(d))
+    
+    a['maxdrought'] = sum(a['maxdrought_' + c] for c in 'jiltsoz') / 7.
+    a['meddrought'] = sum(a['meddrought_' + c] for c in 'jiltsoz') / 7.
+    a['repchance'] = sum(a['repchance_' + c] for c in 'jiltsoz') / 7.
+    
     return a
 
 def baginess(seq):
     a = {}
     td = 0
-    tb = 0
+    tb = tb6 = 0
     c = 0
     for i in range(len(seq) - 6):
         b = seq[i:i+7]
@@ -38,9 +43,12 @@ def baginess(seq):
         td += z
         if z == 7:
             tb += 1
+        if z >= 6:
+            tb6 += 1
         c += 1
     a['diversity'] = td / float(c)  # average number of unique pieces per 7-piece window
     a['bagginess'] = tb / float(c)  # % of 7-piece windows which have all 7 pieces
+    a['bagginess6'] = tb6 / float(c)  # % of 7-piece windows which have at least 6 pieces
     return a
 
 def evenness(seq):
