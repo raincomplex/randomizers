@@ -1,13 +1,13 @@
 #!/usr/bin/python2
-import importlib, re, sys
+import importlib, re, sys, glob
 from multiprocessing import Pool, cpu_count
 
 from analysis import analyze
 import compare
 
-modulenames = '''
-nes fullrandom flatbag foreverbag deepbag tap ti bag bag2
-'''.split()
+modulenames = glob.glob('randos/*.py')
+modulenames = [re.sub(r'randos/(.*)\.py$', lambda m: m.group(1), n) for n in modulenames]
+modulenames.remove('__init__')
 
 count = 100000
 if '--fast' in sys.argv:
