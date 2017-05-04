@@ -7,64 +7,59 @@ def rand_type0(seed):
         seed = ((seed * 1103515245) + 12345) & 0xffffffff
         yield (seed >> 10) & 0x7fff
 
-def Randomizer(seed = None):
-    if seed == None:
-        seed = int(time.time())
-        
-    # init
-    rand = rand_type0(seed)
-    bag = [x/5 for x in range(35)]
-    droughts = [4] * 7
-    history = [1, 1, 2, 2]
-    max_drought = [0]
-    replacement_piece = [0]
+class Randomizer:
+    def __init__(self, seed=None):
+        if seed == None:
+            seed = int(time.time())
 
-    def replace_bag(i):
+        self.rand = rand_type0(seed)
+        self.bag = [x/5 for x in range(35)]
+        self.droughts = [4] * 7
+        self.history = [1, 1, 2, 2]
+        self.max_drought = 0
+        self.replacement_piece = 0
+        self.first = True
+
+    def replace_bag(self, i):
         for n in range(7):
-            if max_drought[0] < droughts[n]:
-                max_drought[0] = droughts[n]
-                replacement_piece[0] = n
-        bag[i] = replacement_piece[0]
-    
-    # first piece
-    first = next(rand) % 7
-    if first in (1, 2, 5):
-        while True:
-            while True:
-                first = next(rand) % 7
-                if first != 1:
-                    break
-            if first != 2 and first != 5:
-                break
-    history[0] = first
-    yield pieces[first]
+            if self.max_drought < self.droughts[n]:
+                self.max_drought = self.droughts[n]
+                self.replacement_piece = n
+        self.bag[i] = self.replacement_piece
 
-    while True:
-        max_drought[0] = 0
-        replacement_piece[0] = 0
-        
-        # loop
+    def next(self):
+        if self.first:
+            result = next(self.rand) % 7
+            while result in (1, 2, 5):
+                result = next(self.rand) % 7
+                if result != 1 and result != 2 and result != 5:
+                    break
+            self.history[0] = result
+            self.first = False
+            return pieces[result]
+
+        self.max_drought = 0
+        self.replacement_piece = 0
+
         for roll in range(6):
-            n = next(rand) % 35
-            result = bag[n]
-            if result not in history:
+            n = next(self.rand) % 35
+            result = self.bag[n]
+            if result not in self.history:
                 break
-            replace_bag(n)
-            n = next(rand) % 35
-            result = bag[n]
+            self.replace_bag(n)
+            n = next(self.rand) % 35
+            result = self.bag[n]
 
         for piece in range(7):
-            droughts[piece] += 1
-        droughts[result] = 0
-        
-        replace_bag(n)
+            self.droughts[piece] += 1
+        self.droughts[result] = 0
 
-        yield pieces[result]
+        self.replace_bag(n)
 
-        history[3] = history[2]
-        history[2] = history[1]
-        history[1] = history[0]
-        history[0] = result
+        self.history.pop()
+        self.history.insert(0, result)
+
+        return pieces[result]
 
 
 demo_seed = 0x1106 # generates attract mode player 1 sequence
