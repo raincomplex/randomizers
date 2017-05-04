@@ -1,0 +1,6 @@
+
+MODULES=`echo *.py | sed 's/\.py//g'`
+
+echo $MODULES
+echo
+python2 -m unittest -v $MODULES
