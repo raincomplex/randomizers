@@ -23,7 +23,7 @@ def process(t):
     return (name, a)
 
 pool = Pool(cpu_count())
-m = pool.map(process, load.rands.items())
+m = pool.map(process, sorted(load.rands.items()))
 print
 for t in m:
     name, a = t
