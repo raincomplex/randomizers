@@ -25,16 +25,6 @@ binds = {
 
 import piecedata.ars as rotsys
 
-piececolor = {
-    'i': (255, 0, 0),
-    't': (0, 255, 255),
-    'j': (0, 0, 255),
-    'l': (255, 127, 0),
-    's': (255, 0, 255),
-    'z': (0, 255, 0),
-    'o': (255, 255, 0),
-}
-
 # end config
 
 flags = set()
@@ -89,6 +79,7 @@ class Piece: pass
 
 spawnpos = rotsys.spawnpos
 piecedata = rotsys.pieces
+piececolor = rotsys.colors
 
 # event handling
 
