@@ -1,9 +1,11 @@
+import math
 
 def analyze(s):
     a = {}
     a.update(droughts(s))
     a.update(baginess(s))
     a.update(evenness(s))
+    a.update(entropy(s))
     return a
 
 def droughts(seq):
@@ -72,4 +74,22 @@ def evenness(seq):
     return {
         'evenness_diff': fdiff,
         'evenness_same': fsame,
+    }
+
+def entropy(seq):
+    d = {}
+    total = 0
+    size = 6  # produces the largest spread
+    for i in range(len(seq) - size + 1):
+        x = seq[i:i+size]
+        d[x] = d.get(x, 0) + 1
+        total += 1
+
+    e = 0
+    for x, c in d.items():
+        p = c / float(total)
+        e -= p * math.log(p)
+
+    return {
+        'entropy': e,
     }

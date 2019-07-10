@@ -6,9 +6,11 @@ import load
 from analysis import analyze
 import compare
 
-count = 100000
+count = 1000000
 if '--fast' in sys.argv:
-    count = 10000
+    count = 100000
+
+#compare_single = 'entropy'
 
 # end config
 
@@ -35,3 +37,11 @@ for t in m:
     print
 
 compare.similarity()
+
+if 'compare_single' in globals():
+    key = compare_single
+    print key
+    m.sort(key=lambda t: t[1][key])
+    for name, a in m:
+        print '%14.10f  %s' % (a[key], name)
+    print
