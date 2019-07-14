@@ -1,5 +1,5 @@
 import unittest
-import tgm
+from . import tgm
 
 class Randomizer(tgm.Randomizer):
     def __init__(self, seed=None):

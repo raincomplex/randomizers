@@ -13,7 +13,7 @@ class Randomizer:
             seed = int(time.time())
 
         self.rand = rand_type0(seed)
-        self.bag = [x/5 for x in range(35)]
+        self.bag = [int(x/5) for x in range(35)]
         self.droughts = [4] * 7
         self.history = [1, 1, 2, 2]
         self.max_drought = 0
@@ -96,7 +96,7 @@ class Tests(unittest.TestCase):
     def testPieceSequence(self):
         rng = Randomizer(demo_seed)
         for piece in 'jltiojslzijtolzstiojstizojlstzilsto':
-            assert next(rng) == piece
+            assert rng.next() == piece
 
 def main():
     seed = demo_seed

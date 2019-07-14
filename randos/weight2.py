@@ -9,11 +9,11 @@ class Randomizer:
             if self.weights[i] > 1:
                 self.weights[i] -= 1
 
-        total = sum(1. / w for w in self.weights)
+        total = sum(1 / w for w in self.weights)
         n = random.random() * total
 
         for i, w in enumerate(self.weights):
-            n -= 1. / w
+            n -= 1 / w
             if n < 0 or i == 6:
                 self.weights[i] += 5
                 return 'jiltsoz'[i]

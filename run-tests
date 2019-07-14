@@ -1,0 +1,8 @@
+
+cd `dirname \`realpath $0\``
+
+MODULES=`echo randos/*.py | sed 's/\.py//g; s:/:.:g'`
+
+echo $MODULES
+echo
+python3 -m unittest -v $MODULES

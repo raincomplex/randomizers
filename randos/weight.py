@@ -21,7 +21,7 @@ class Randomizer:
             else:
                 if n > self.wmaxplace:
                     n = self.wmaxplace
-                w = self.wmin + (self.wmax - self.wmin) * (n / float(self.wmaxplace))
+                w = self.wmin + (self.wmax - self.wmin) * (n / self.wmaxplace)
 
             prob[piece] = w
 

@@ -2,7 +2,6 @@ import re, glob, importlib
 
 modulenames = glob.glob('randos/*.py')
 modulenames = [re.sub(r'randos/(.*)\.py$', lambda m: m.group(1), n) for n in modulenames]
-modulenames.remove('__init__')
 
 modules = {}
 for m in modulenames:
@@ -22,4 +21,4 @@ for name, m in sorted(modules.items()):
     elif hasattr(m, 'Randomizer'):
         rands[name] = m.Randomizer
     else:
-        print 'module has no factory functions or Randomizer class:', name
+        print('module has no factory functions or Randomizer class:', name)

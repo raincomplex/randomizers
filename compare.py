@@ -22,21 +22,21 @@ def similarity():
     # normalize
     for name, d in vectors.items():
         for k, v in list(d.items()):
-            n = (v - mins[k]) / float(maxes[k] - mins[k])
+            n = (v - mins[k]) / (maxes[k] - mins[k])
             if k in logarithmic:
                 n = math.log(1 + n, 2)
             d[k] = n
 
     for name, d in sorted(vectors.items()):
-        print name
+        print(name)
         lst = []
         for name2, d2 in vectors.items():
             if name != name2:
                 z = distance(d, d2)
                 lst.append((z, name2))
         for z, name2 in sorted(lst):
-            print '    %.3f  %s' % (z, name2)
-        print
+            print('    %.3f  %s' % (z, name2))
+        print()
 
 def distance(v1, v2):
     assert set(v1) == set(v2)

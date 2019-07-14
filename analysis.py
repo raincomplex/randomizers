@@ -24,13 +24,13 @@ def droughts(seq):
         d.sort()
         
         a['maxdrought_' + c] = d[-1]
-        #a['avgdrought_' + c] = sum(d) / float(len(d))
-        a['meddrought_' + c] = d[len(d) / 2]
-        a['repchance_' + c] = d.count(0) / float(len(d))
+        #a['avgdrought_' + c] = sum(d) / len(d)
+        a['meddrought_' + c] = d[int(len(d) / 2)]
+        a['repchance_' + c] = d.count(0) / len(d)
     
-    a['maxdrought'] = sum(a['maxdrought_' + c] for c in 'jiltsoz') / 7.
-    a['meddrought'] = sum(a['meddrought_' + c] for c in 'jiltsoz') / 7.
-    a['repchance'] = sum(a['repchance_' + c] for c in 'jiltsoz') / 7.
+    a['maxdrought'] = sum(a['maxdrought_' + c] for c in 'jiltsoz') / 7
+    a['meddrought'] = sum(a['meddrought_' + c] for c in 'jiltsoz') / 7
+    a['repchance'] = sum(a['repchance_' + c] for c in 'jiltsoz') / 7
     
     return a
 
@@ -48,9 +48,9 @@ def baginess(seq):
         if z >= 6:
             tb6 += 1
         c += 1
-    a['diversity'] = td / float(c)  # average number of unique pieces per 7-piece window
-    a['bagginess'] = tb / float(c)  # % of 7-piece windows which have all 7 pieces
-    a['bagginess6'] = tb6 / float(c)  # % of 7-piece windows which have at least 6 pieces
+    a['diversity'] = td / c  # average number of unique pieces per 7-piece window
+    a['bagginess'] = tb / c  # % of 7-piece windows which have all 7 pieces
+    a['bagginess6'] = tb6 / c  # % of 7-piece windows which have at least 6 pieces
     return a
 
 def evenness(seq):
@@ -65,10 +65,10 @@ def evenness(seq):
             else:
                 diff.append(n)
     
-    avg = sum(diff) / float(len(diff))
+    avg = sum(diff) / len(diff)
     fdiff = sum((x - avg)**2 for x in diff)
     
-    avg = sum(same) / float(len(same))
+    avg = sum(same) / len(same)
     fsame = sum((x - avg)**2 for x in same)
     
     return {
@@ -87,7 +87,7 @@ def entropy(seq):
 
     e = 0
     for x, c in d.items():
-        p = c / float(total)
+        p = c / total
         e -= p * math.log(p)
 
     return {

@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/env python3
 import re, sys
 from multiprocessing import Pool, cpu_count
 
@@ -21,27 +21,27 @@ def process(t):
     for i in range(count):
         s += r.next()
     a = analyze(s)
-    print '...', name
+    print('...', name)
     return (name, a)
 
 pool = Pool(cpu_count())
 m = pool.map(process, sorted(load.rands.items()))
-print
+print()
 for t in m:
     name, a = t
-    print name
+    print(name)
     for k, v in sorted(a.items()):
         if not re.search(r'_[jiltsoz]$', k):
-            print '    %s: %s' % (k, v)
+            print('    %s: %s' % (k, v))
             compare.addelement(name, k, v)
-    print
+    print()
 
 compare.similarity()
 
 if 'compare_single' in globals():
     key = compare_single
-    print key
+    print(key)
     m.sort(key=lambda t: t[1][key])
     for name, a in m:
-        print '%14.10f  %s' % (a[key], name)
-    print
+        print('%14.10f  %s' % (a[key], name))
+    print()

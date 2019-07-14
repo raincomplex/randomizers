@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/env python3
 import pygame, sys, time
 import load
 
@@ -37,15 +37,15 @@ for f in ['20g']:
 if len(sys.argv) == 2:
     Randomizer = load.rands[sys.argv[1]]
 else:
-    print 'Usage: %s RANDOMIZER [OPTIONS...]' % sys.argv[0]
-    print
-    print 'Randomizers:'
+    print('Usage: %s RANDOMIZER [OPTIONS...]' % sys.argv[0])
+    print()
+    print('Randomizers:')
     for name in sorted(load.rands):
-        print '    ' + name
-    print
-    print 'Options:'
-    print '    20g'
-    print
+        print('    ' + name)
+    print()
+    print('Options:')
+    print('    20g')
+    print()
     exit(1)
 
 class Game:
@@ -323,7 +323,7 @@ def softdropPiece():
 def drawScreen():
     surf = pygame.display.get_surface()
     w, h = surf.get_size()
-    sz = int(h / 25.)  # block size
+    sz = int(h / 25)  # block size
 
     surf.fill((0, 0, 0))
 
@@ -335,7 +335,7 @@ def drawScreen():
                 pygame.draw.rect(surf, color, ((1+x)*sz, (4+y)*sz, sz, sz))
     
     if game.active:
-        dim = 1 - .7 * float(game.lock - game.timer) / game.lock
+        dim = 1 - .7 * (game.lock - game.timer) / game.lock
         color = piececolor[game.active.name]
         color = tuple(dim * c for c in color)
         for x, y in getPieceBlocks():
@@ -366,7 +366,7 @@ def main():
     game = Game()
     game.over = True
 
-    frame = 1/60.
+    frame = 1/60
     while True:
         start = time.time()
         handleEvents()

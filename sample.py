@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/env python3
 import sys, load
 
 count = 1000
@@ -13,6 +13,6 @@ for name in names:
     for i in range(count):
         s += rand.next()
 
-    print name
-    print s
-    print
+    print(name)
+    print(s)
+    print()

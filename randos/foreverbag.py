@@ -50,4 +50,4 @@ if __name__ == '__main__':
         s = ''
         for i in range(40):
             s += fb.next()
-        print s
+        print(s)
