@@ -43,8 +43,13 @@ def goodcache(name, cachepath):
     if not os.path.exists(cachepath):
         return False
     modpath = os.path.join('randos', name.split('/')[0] + '.py')
-    if os.stat(cachepath).st_mtime < os.stat(modpath).st_mtime:
+    mt = os.stat(cachepath).st_mtime
+    if mt < os.stat(modpath).st_mtime:
         return False
+    if modpath.endswith('/general.py'):
+        modpath = os.path.join('general', 'randos.py')
+        if mt < os.stat(modpath).st_mtime:
+            return False
     return True
 
 pool = Pool(cpu_count())
