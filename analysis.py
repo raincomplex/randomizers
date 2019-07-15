@@ -1,4 +1,5 @@
 import math
+from collections import Counter
 
 def analyze(s):
     a = {}
@@ -10,6 +11,8 @@ def analyze(s):
 
 def droughts(seq):
     a = {}
+    dc = Counter()
+    
     for c in 'jiltsoz':
         d = [len(s) for s in seq.split(c)]
         
@@ -22,6 +25,7 @@ def droughts(seq):
             d.pop()
         
         d.sort()
+        dc.update(d)
         
         a['maxdrought_' + c] = d[-1]
         #a['avgdrought_' + c] = sum(d) / len(d)
@@ -31,6 +35,9 @@ def droughts(seq):
     a['maxdrought'] = sum(a['maxdrought_' + c] for c in 'jiltsoz') / 7
     a['meddrought'] = sum(a['meddrought_' + c] for c in 'jiltsoz') / 7
     a['repchance'] = sum(a['repchance_' + c] for c in 'jiltsoz') / 7
+
+    total = sum(dc.values())
+    a['drought_graph'] = ', '.join('%d=%.3f' % (k, v / total) for k, v in dc.items())
     
     return a
 
