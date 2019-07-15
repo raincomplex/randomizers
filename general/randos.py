@@ -40,6 +40,19 @@ def lin(history):
     return _recent(history, lambda w: w+1)
 
 
+def wet(history):
+    'full random, but with drought limits'
+    size = 12
+    if len(history) < size:
+        history = list('jiltsoz') + history
+    history = history[-(size-1):]
+    
+    for c in 'jiltsoz':
+        if c not in history:
+            return {c: 1}
+    return pure(history)
+
+
 def nes(history):
     if len(history) > 0:
         last = history[-1]
