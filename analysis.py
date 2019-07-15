@@ -1,6 +1,8 @@
 import math
 from collections import Counter
 
+desc = {}
+
 def analyze(s):
     a = {}
     a.update(droughts(s))
@@ -8,6 +10,7 @@ def analyze(s):
     a.update(evenness(s))
     a.update(entropy(s))
     return a
+
 
 def droughts(seq):
     a = {}
@@ -41,6 +44,12 @@ def droughts(seq):
     
     return a
 
+desc['maxdrought'] = 'longest time between two of the same piece (avg of 7)'
+desc['meddrought'] = 'median time between two of the same piece (avg of 7)'
+desc['repchance'] = 'chance of getting the same piece twice in a row (avg of 7)'
+desc['drought_graph'] = 'histogram of drought times'
+
+
 def baginess(seq):
     a = {}
     td = 0
@@ -55,13 +64,17 @@ def baginess(seq):
         if z >= 6:
             tb6 += 1
         c += 1
-    a['diversity'] = td / c  # average number of unique pieces per 7-piece window
-    a['bagginess'] = tb / c  # % of 7-piece windows which have all 7 pieces
-    a['bagginess6'] = tb6 / c  # % of 7-piece windows which have at least 6 pieces
+    a['diversity'] = td / c
+    a['bagginess'] = tb / c
+    a['bagginess6'] = tb6 / c
     return a
 
+desc['diversity'] = 'average number of unique pieces per 7-piece window'
+desc['bagginess'] = '% of 7-piece windows which have all 7 pieces'
+desc['bagginess6'] = '% of 7-piece windows which have at least 6 pieces'
+
+
 def evenness(seq):
-    'measure the evenness of the distribution of pairs of pieces'
     same = []
     diff = []
     for x in 'jiltsoz':
@@ -83,6 +96,10 @@ def evenness(seq):
         'evenness_same': fsame,
     }
 
+desc['evenness_diff'] = 'sum of squares on distribution of pairs of different pieces'
+desc['evenness_same'] = 'sum of squares on distribution of pairs of same pieces'
+
+
 def entropy(seq):
     d = {}
     total = 0
@@ -100,3 +117,5 @@ def entropy(seq):
     return {
         'entropy': e,
     }
+
+desc['entropy'] = 'computed by counting unique 6-piece sequences'

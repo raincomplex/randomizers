@@ -32,16 +32,19 @@ def similarity():
                 n = math.log(1 + n, 2)
             d[k] = n
 
-    for name, d in sorted(vectors.items()):
-        print(name)
-        lst = []
-        for name2, d2 in vectors.items():
-            if name != name2:
-                z = distance(d, d2)
-                lst.append((z, name2))
-        for z, name2 in sorted(lst):
-            print('    %.3f  %s' % (z, name2))
-        print()
+    with open('similarity.txt', 'w') as f:
+        print(file=f)
+        for name, d in sorted(vectors.items()):
+            print(name, file=f)
+            lst = []
+            for name2, d2 in vectors.items():
+                if name != name2:
+                    z = distance(d, d2)
+                    lst.append((z, name2))
+            for z, name2 in sorted(lst):
+                print('    %.3f  %s' % (z, name2), file=f)
+            print(file=f)
+    print('wrote similarity.txt')
 
 def distance(v1, v2):
     assert set(v1) == set(v2)
