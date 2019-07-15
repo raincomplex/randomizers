@@ -30,8 +30,12 @@ def process(t):
         usedcache = False
         r = factory()
         s = ''
-        for i in range(count):
-            s += r.next()
+        try:
+            for i in range(count):
+                s += r.next()
+        except:
+            print('error while generating for', name)
+            raise
         with open(cachepath, 'w') as f:
             f.write(s)
 

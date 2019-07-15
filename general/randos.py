@@ -16,6 +16,35 @@ def bag(history):
         bag -= set(history[-used:])
     return {c: 1 for c in bag}
 
+def seamlessbag(history):
+    'seamless 7-piece bag'
+    bag = set('jiltsoz')
+    for c in history[-7:]:
+        bag.discard(c)
+    if not bag:
+        bag = set('jiltsoz')
+    return {c: 1 for c in bag}
+
+# TODO deep bag (a 7-piece bag which is filled from a second 7-piece bag)
+
+def seamlessdeep(history):
+    'a 7-piece bag which is filled from a second 7-piece bag (seamless)'
+    bag = list('jiltsoz'*2)
+    for c in history[-7:]:
+        if c in bag:
+            bag.remove(c)
+    return {c: bag.count(c) for c in 'jiltsoz'}
+
+def seamlessbag2(history):
+    'seamless 14-piece bag'
+    bag = list('jiltsoz'*2)
+    for c in history[-14:]:
+        if c in bag:
+            bag.remove(c)
+    if not bag:
+        bag = list('jiltsoz')
+    return {c: bag.count(c) for c in 'jiltsoz'}
+
 
 def _recent(history, op):
     p = {}
