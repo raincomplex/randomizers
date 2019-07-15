@@ -1,15 +1,27 @@
 #!/usr/bin/env python3
 import random
-import randos
+try:
+    import general.randos as randos
+except:
+    import randos
+
+class Stream:
+    def __init__(self, func, history=None):
+        self.func = func
+        self.history = history or []
+
+    def next(self):
+        r = self.func(self.history)
+        p = generatePiece(r)
+        self.history.append(p)
+        return p
 
 def run(randfunc, count=1000):
     'generate a piece sequence with the given randomizer function'
-    history = []
-    while len(history) < count:
-        r = randfunc(history)
-        p = generatePiece(r)
-        history.append(p)
-    return history
+    s = Stream(randfunc)
+    for i in range(count):
+        s.next()
+    return s.history
 
 def runprob(randfunc, count, history=None):
     'find the probability of the next piece after "count" pieces, considering all possiblilities'
@@ -53,6 +65,14 @@ def generatePiece(probs):
 def formatProbs(p):
     return '{%s}' % ', '.join('%s %.3f' % (c, p.get(c, 0)) for c in 'jiltsoz')
 
+def listrandos():
+    lst = []
+    for name in dir(randos):
+        if not name.startswith('_'):
+            lst.append(getattr(randos, name))
+    lst.sort(key=lambda f: f.__code__.co_firstlineno)
+    return lst
+
 if __name__ == '__main__':
     import sys
     
@@ -60,13 +80,7 @@ if __name__ == '__main__':
     display = 80
     showrunprob = ('-p' in sys.argv)
     
-    funclist = []
-    for name in dir(randos):
-        if not name.startswith('_'):
-            funclist.append(getattr(randos, name))
-    funclist.sort(key=lambda f: f.__code__.co_firstlineno)
-    
-    for func in funclist:
+    for func in listrandos():
         print(func.__name__)
         seq = ''.join(run(func, count))
         print(seq[:display])
