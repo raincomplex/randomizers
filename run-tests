@@ -1,7 +1,7 @@
 
 cd `dirname \`realpath $0\``
 
-MODULES=`echo randos/*.py general/*.py | sed 's/\.py//g; s:/:.:g'`
+MODULES=`echo randos/*.py general/tests.py | sed 's/\.py//g; s:/:.:g'`
 
 echo $MODULES
 echo

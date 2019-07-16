@@ -5,7 +5,10 @@ def pure(history):
 
 def flat(history):
     'fixed sequence'
-    return {'jiltsoz'[len(history) % 7]: 1}
+    if len(history) == 0:
+        return {'j': 1}
+    c = 'jiltsoz'.index(history[-1])
+    return {'jiltsoz'[(c + 1) % 7]: 1}
 
 
 def bag(history):
