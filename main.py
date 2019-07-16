@@ -92,6 +92,17 @@ precision = {
     'repchance': 4,
 }
 
+def plotgraph(data, imgpath):
+    #data = [pt.split('=') for pt in data.split(', ')]
+    #data = [(int(a), float(b)) for a, b in data]
+    highx = max(data.keys()) + .5
+    highy = max(data.values()) * 1.1
+    
+    p = os.popen('''gnuplot -e 'set terminal png; set key off; plot [-.5:%f] [0:%f] "-" with boxes fill pattern 1' > %s''' % (highx, highy, imgpath), 'w')
+    for k, v in sorted(data.items()):
+        p.write('%s %s\n' % (k, v))
+    p.close()
+
 for (name, a) in m:
     with open(os.path.join('html', 'algo_%s.html' % safefile(name)), 'w') as f:
         print('<h1>%s</h1>' % name, file=f)
@@ -102,13 +113,18 @@ for (name, a) in m:
 
         for k, v in sorted(a.items()):
             if not re.search(r'_[jiltsoz]$', k):
-                if k not in keys:
-                    lnk = k
+                if k.endswith('_graph'):
+                    img = '%s_%s.png' % (safefile(name), safefile(k))
+                    plotgraph(v, os.path.join('html', img))
+                    print('<p>%s:<br><img src="%s">' % (k, img), file=f)
                 else:
-                    lnk = '<a href="metric_%s.html">%s</a>' % (safefile(k), k)
-                if k in precision:
-                    v = ('%%.%df' % precision[k]) % v
-                print('<p>%s: %s' % (lnk, v), file=f)
+                    if k not in keys:
+                        lnk = k
+                    else:
+                        lnk = '<a href="metric_%s.html">%s</a>' % (safefile(k), k)
+                    if k in precision:
+                        v = ('%%.%df' % precision[k]) % v
+                    print('<p>%s: %s' % (lnk, v), file=f)
 
         print('<p>similarity: (lower is more similar) <table style="margin-left: 3em">', file=f)
         for name2, dist in sorted(sim[name].items(), key=lambda t: t[1]):
