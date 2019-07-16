@@ -1,26 +1,23 @@
 #!/usr/bin/env python3
-import os
+import os, json
 
 minconnections = 5
 maxdist = .3  # maximum distance to create a connection
 
+with open('similarity.json', 'r') as f:
+    sim = json.load(f)
+
 d = {}
 include = set()
-with open('similarity.txt', 'r') as f:
+for cur in sim:
     n = 0
-    for line in f:
-        if line.startswith(' '):
-            dist, other = line.split()
-            dist = float(dist)
-            if (other, cur) not in d:
-                d[cur, other] = dist
-            if n < minconnections:
-                include.add((cur, other))
-                include.add((other, cur))
-            n += 1
-        else:
-            cur = line.strip()
-            n = 0
+    for other, dist in sorted(sim[cur].items(), key=lambda t: t[1]):
+        if (other, cur) not in d:
+            d[cur, other] = dist
+        if n < minconnections:
+            include.add((cur, other))
+            include.add((other, cur))
+        n += 1
 
 with open('similarity.dot', 'w') as f:
     print('graph { start=true; ', file=f)
