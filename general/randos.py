@@ -48,6 +48,16 @@ def seamlessbag2(history):
         bag = list('jiltsoz')
     return {c: bag.count(c) for c in 'jiltsoz'}
 
+def seamlessbag3(history):
+    'seamless 21-piece bag'
+    bag = list('jiltsoz'*3)
+    for c in history[-21:]:
+        if c in bag:
+            bag.remove(c)
+    if not bag:
+        bag = list('jiltsoz')
+    return {c: bag.count(c) for c in 'jiltsoz'}
+
 
 def _recent(history, op):
     p = {}
