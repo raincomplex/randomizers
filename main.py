@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import re, os, sys
+import re, os, sys, json
 from multiprocessing import Pool, cpu_count
 
 import load, analysis, compare
@@ -27,7 +27,9 @@ def process(t):
     if goodcache(name, cachepath):
         usedcache = True
         with open(cachepath, 'r') as f:
-            s = f.read()
+            data = json.load(f)
+        s = data['seq']
+        a = data['ana']
         if len(s) != count:
             s = None
 
@@ -41,11 +43,13 @@ def process(t):
         except:
             print('error while generating for', name)
             raise
+        
+        a = analysis.analyze(s)
+        
         with open(cachepath, 'w') as f:
-            f.write(s)
+            json.dump({'seq': s, 'ana': a}, f)
 
-    a = analysis.analyze(s)
-    print('...', name, ' (cached sequence)' if usedcache else '')
+    print('...', name, ' (cached)' if usedcache else '')
     return (name, a)
 
 def goodcache(name, cachepath):
@@ -92,30 +96,37 @@ precision = {
     'repchance': 4,
 }
 
+graphqueue = []
+def queuegraph(*args):
+    graphqueue.append(args)
+def rungraphs():
+    for args in graphqueue:
+        plotgraph(*args)
+
 def plotgraph(data, imgpath):
-    #data = [pt.split('=') for pt in data.split(', ')]
-    #data = [(int(a), float(b)) for a, b in data]
-    highx = max(data.keys()) + .5
-    highy = max(data.values()) * 1.1
+    highx = max(t[0] for t in data) + .5
+    highy = max(t[1] for t in data) * 1.1
     
     p = os.popen('''gnuplot -e 'set terminal png; set key off; plot [-.5:%f] [0:%f] "-" with boxes fill pattern 1' > %s''' % (highx, highy, imgpath), 'w')
-    for k, v in sorted(data.items()):
+    for k, v in sorted(data):
         p.write('%s %s\n' % (k, v))
     p.close()
+
+print('writing html files...')
 
 for (name, a) in m:
     with open(os.path.join('html', 'algo_%s.html' % safefile(name)), 'w') as f:
         print('<h1>%s</h1>' % name, file=f)
 
         with open(os.path.join('cache', safefile(name)), 'r') as cf:
-            seq = cf.read(1000)
+            seq = json.load(cf)['seq'][:1000]
         print('<p style="font-family: mono; word-wrap: break-word">' + seq, file=f)
 
         for k, v in sorted(a.items()):
             if not re.search(r'_[jiltsoz]$', k):
                 if k.endswith('_graph'):
                     img = '%s_%s.png' % (safefile(name), safefile(k))
-                    plotgraph(v, os.path.join('html', img))
+                    queuegraph(v, os.path.join('html', img))
                     print('<p>%s:<br><img src="%s">' % (k, img), file=f)
                 else:
                     if k not in keys:
@@ -144,4 +155,7 @@ for key in sorted(keys):
             print('<tr><td style="text-align: right">%s</td><td style="padding-left: 2em"><a href="algo_%s.html">%s</a></td></tr>' % (v, safefile(name), name), file=f)
         print('</table>', file=f)
 
-print('wrote html files')
+print('plotting graphs...')
+rungraphs()
+
+print('done')

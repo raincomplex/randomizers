@@ -40,7 +40,7 @@ def droughts(seq):
     a['repchance'] = sum(a['repchance_' + c] for c in 'jiltsoz') / 7
 
     total = sum(dc.values())
-    a['drought_graph'] = {k: v / total for k, v in dc.items()}
+    a['drought_graph'] = [(k, v / total) for k, v in dc.items()]
     
     return a
 
