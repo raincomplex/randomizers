@@ -80,6 +80,18 @@ keys = keys - compare.exclude_compare
 
 sim = compare.similarity()
 
+precision = {
+    'bagginess': 4,
+    'bagginess6': 4,
+    'diversity': 1,
+    'entropy': 3,
+    'evenness_diff': 0,
+    'evenness_same': 0,
+    'maxdrought': 1,
+    'meddrought': 1,
+    'repchance': 4,
+}
+
 for (name, a) in m:
     with open(os.path.join('html', 'algo_%s.html' % safefile(name)), 'w') as f:
         print('<h1>%s</h1>' % name, file=f)
@@ -94,6 +106,8 @@ for (name, a) in m:
                     lnk = k
                 else:
                     lnk = '<a href="metric_%s.html">%s</a>' % (safefile(k), k)
+                if k in precision:
+                    v = ('%%.%df' % precision[k]) % v
                 print('<p>%s: %s' % (lnk, v), file=f)
 
         print('<p>similarity: (lower is more similar) <table style="margin-left: 3em">', file=f)
@@ -105,9 +119,13 @@ for key in sorted(keys):
     with open(os.path.join('html', 'metric_%s.html' % safefile(key)), 'w') as f:
         print('<h1>%s</h1>' % key, file=f)
         print('<p>%s' % analysis.desc[key], file=f)
-        print('<p>', file=f)
+        print('<p><table>', file=f)
         m.sort(key=lambda t: t[1][key])
         for name, a in m:
-            print('%14.10f  <a href="algo_%s.html">%s</a><br>' % (a[key], safefile(name), name), file=f)
+            v = a[key]
+            if key in precision:
+                v = ('%%.%df' % precision[key]) % v
+            print('<tr><td style="text-align: right">%s</td><td style="padding-left: 2em"><a href="algo_%s.html">%s</a></td></tr>' % (v, safefile(name), name), file=f)
+        print('</table>', file=f)
 
 print('wrote html files')
