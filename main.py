@@ -92,7 +92,7 @@ precision = {
     'evenness_diff': 0,
     'evenness_same': 0,
     'maxdrought': 1,
-    'meddrought': 1,
+    'peakdrought': 1,
     'repchance': 4,
 }
 

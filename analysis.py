@@ -29,14 +29,15 @@ def droughts(seq):
         
         d.sort()
         dc.update(d)
+
+        peak = max(Counter(d).items(), key=lambda t: t[1])[0]
         
         a['maxdrought_' + c] = d[-1]
-        #a['avgdrought_' + c] = sum(d) / len(d)
-        a['meddrought_' + c] = d[int(len(d) / 2)]
+        a['peakdrought_' + c] = peak
         a['repchance_' + c] = d.count(0) / len(d)
     
     a['maxdrought'] = sum(a['maxdrought_' + c] for c in 'jiltsoz') / 7
-    a['meddrought'] = sum(a['meddrought_' + c] for c in 'jiltsoz') / 7
+    a['peakdrought'] = sum(a['peakdrought_' + c] for c in 'jiltsoz') / 7
     a['repchance'] = sum(a['repchance_' + c] for c in 'jiltsoz') / 7
 
     total = sum(dc.values())
@@ -45,7 +46,7 @@ def droughts(seq):
     return a
 
 desc['maxdrought'] = 'longest time between two of the same piece (avg of 7)'
-desc['meddrought'] = 'median time between two of the same piece (avg of 7)'
+desc['peakdrought'] = 'most common time between two of the same piece (avg of 7)'
 desc['repchance'] = 'chance of getting the same piece twice in a row (avg of 7)'
 desc['drought_graph'] = 'histogram of drought times'
 
