@@ -9,6 +9,7 @@ def analyze(s):
     a.update(baginess(s))
     a.update(evenness(s))
     a.update(entropy(s))
+    a.update(follow(s))
     return a
 
 
@@ -45,9 +46,9 @@ def droughts(seq):
     
     return a
 
-desc['maxdrought'] = 'longest time between two of the same piece (avg of 7)'
-desc['peakdrought'] = 'most common time between two of the same piece (avg of 7)'
-desc['repchance'] = 'chance of getting the same piece twice in a row (avg of 7)'
+desc['maxdrought'] = 'longest time between two of the same piece (avg across 7 piece types)'
+desc['peakdrought'] = 'most common time between two of the same piece (avg across 7 piece types)'
+desc['repchance'] = 'chance of getting the same piece twice in a row (avg across 7 piece types)'
 desc['drought_graph'] = 'histogram of drought times'
 
 
@@ -71,8 +72,8 @@ def baginess(seq):
     return a
 
 desc['diversity'] = 'average number of unique pieces per 7-piece window'
-desc['bagginess'] = '% of 7-piece windows which have all 7 pieces'
-desc['bagginess6'] = '% of 7-piece windows which have at least 6 pieces'
+desc['bagginess'] = 'percent of 7-piece windows which have all 7 pieces'
+desc['bagginess6'] = 'percent of 7-piece windows which have at least 6 pieces'
 
 
 def evenness(seq):
@@ -93,12 +94,44 @@ def evenness(seq):
     fsame = sum((x - avg)**2 for x in same)
     
     return {
-        'evenness_diff': fdiff,
-        'evenness_same': fsame,
+        'evenness_diff': math.log(fdiff + 1, 10),
+        'evenness_same': math.log(fsame + 1, 10),
     }
 
-desc['evenness_diff'] = 'sum of squares on distribution of pairs of different pieces'
-desc['evenness_same'] = 'sum of squares on distribution of pairs of same pieces'
+desc['evenness_diff'] = 'sum of squares on distribution of pairs of different pieces (log)'
+desc['evenness_same'] = 'sum of squares on distribution of pairs of same pieces (log)'
+
+
+def follow(seq):
+    d = {}
+    size = 4
+    for i in range(len(seq) - size):
+        a = seq[i:i+size]
+        b = seq[i+size]
+        if a not in d:
+            d[a] = {}
+        if b not in d[a]:
+            d[a][b] = 0
+        d[a][b] += 1
+
+    even = 0
+    for a in d:
+        z = 0
+        for b in d[a]:
+            z += d[a][b]
+        z /= 7
+        s = 0
+        for b in d[a]:
+            s += (d[a][b] - z) ** 2
+        even += s
+
+    return {
+        'follow_coverage': len(d) / (7 ** size),
+        'follow_even': math.log(even + 1, 10),
+    }
+
+desc['follow_coverage'] = 'percent of 4-piece sequences that occur'
+desc['follow_even'] = 'for each 4-piece sequence, sum of squares on the distribution of the next piece (log)'
 
 
 def entropy(seq):

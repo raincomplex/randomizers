@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-import re, os, sys, json
+import re, os, sys, json, math
 from multiprocessing import Pool, cpu_count
 
 import load, analysis, compare
 
 count = 1000000
+clean = False
+
 if '--fast' in sys.argv:
     count = 100000
+if '-c' in sys.argv:  # don't use cache
+    clean = True
 
 # end config
 
@@ -24,7 +28,7 @@ def process(t):
     cachepath = os.path.join('cache', safefile(name))
 
     s = None
-    if goodcache(name, cachepath):
+    if not clean and goodcache(name, cachepath):
         usedcache = True
         with open(cachepath, 'r') as f:
             data = json.load(f)
@@ -89,11 +93,13 @@ precision = {
     'bagginess6': 4,
     'diversity': 1,
     'entropy': 3,
-    'evenness_diff': 0,
-    'evenness_same': 0,
+    'evenness_diff': 3,
+    'evenness_same': 3,
     'maxdrought': 1,
     'peakdrought': 1,
     'repchance': 4,
+    'follow_coverage': 4,
+    'follow_even': 3,
 }
 
 graphqueue = []
@@ -128,7 +134,7 @@ for (name, a) in m:
         for k, v in sorted(a.items()):
             if not re.search(r'_[jiltsoz]$', k):
                 if k.endswith('_graph'):
-                    img = '%s_%s.png' % (safefile(name), safefile(k))
+                    img = 'algo_%s_%s.png' % (safefile(name), safefile(k))
                     queuegraph(v, os.path.join('html', img))
                     print('<p>%s:<br><img src="%s">' % (k, img), file=f)
                 else:
@@ -147,16 +153,24 @@ for (name, a) in m:
 
 for key in sorted(keys):
     with open(os.path.join('html', 'metric_%s.html' % safefile(key)), 'w') as f:
+        data = []
+        img = 'metric_%s.png' % safefile(key)
+
         print('<h1>%s</h1>' % key, file=f)
         print('<p>%s' % analysis.desc[key], file=f)
+        print('<p><img src="%s">' % img, file=f)
         print('<p><table>', file=f)
         m.sort(key=lambda t: t[1][key])
         for name, a in m:
             v = a[key]
+            data.append(v)
             if key in precision:
                 v = ('%%.%df' % precision[key]) % v
             print('<tr><td style="text-align: right">%s</td><td style="padding-left: 2em"><a href="algo_%s.html">%s</a></td></tr>' % (v, safefile(name), name), file=f)
         print('</table>', file=f)
+
+        data = [(i, v) for i, v in enumerate(data)]
+        queuegraph(data, os.path.join('html', img))
 
 print('plotting graphs...')
 rungraphs()

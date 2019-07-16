@@ -1,7 +1,7 @@
 import math
 
 vectors = {}
-logarithmic = set(['evenness_diff', 'evenness_same'])
+
 exclude_compare = set('drought_graph'.split())
 
 def addelement(name, key, value):
@@ -30,8 +30,6 @@ def similarity():
             if k in exclude_compare:
                 continue
             n = (v - mins[k]) / (maxes[k] - mins[k])
-            if k in logarithmic:
-                n = math.log(1 + n, 2)
             d[k] = n
 
     # compute distances
