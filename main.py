@@ -78,8 +78,11 @@ m = pool.map(process, sorted(load.rands.items()))
 
 with open(os.path.join('html', 'index.html'), 'w') as f:
     print('<h1>randomizers</h1>', file=f)
+    print('<p>for the source of this project, including the randomizers, see the <a href="https://github.com/raincomplex/randomizers">github repo</a>', file=f)
+    print('<p>', file=f)
     for (name, a) in m:
         print('<a href="algo_%s.html">%s</a><br>' % (safefile(name), name), file=f)
+    print('<p><img style="max-width: 90vw; max-height: 90vh" src="similarity.png">', file=f)
 
 
 keys = set()
@@ -129,6 +132,7 @@ print('writing html files...')
 
 for (name, a) in m:
     with open(os.path.join('html', 'algo_%s.html' % safefile(name)), 'w') as f:
+        print('<p style="float: right"><a href="index.html">index</a>', file=f)
         print('<h1>%s</h1>' % name, file=f)
         print('<p>%s' % load.rands[name].desc, file=f)
 
@@ -161,6 +165,7 @@ for key in sorted(keys):
         data = []
         img = 'metric_%s.png' % safefile(key)
 
+        print('<p style="float: right"><a href="index.html">index</a>', file=f)
         print('<h1>%s</h1>' % key, file=f)
         print('<p>%s' % analysis.desc[key], file=f)
         print('<p><img src="%s">' % img, file=f)
