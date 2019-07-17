@@ -36,4 +36,4 @@ with open(dotfile, 'w') as f:
             print('"%s" -- "%s" [weight=%.3f, color="%s"];' % (a, b, 1/w if w != 0 else 1e6, color), file=f)
     print('}', file=f)
 
-os.system('fdp -Tpng < %s > %s' % (dotfile, os.path.join('html', 'similarity.png'))
+os.system('fdp -Tpng < %s > %s' % (dotfile, os.path.join('html', 'similarity.png')))
