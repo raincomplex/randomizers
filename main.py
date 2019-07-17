@@ -122,7 +122,7 @@ def plotgraph(data, imgpath):
         p.write('%s %s\n' % (k, v))
     p.close()
 
-with open('similarity.json', 'w') as f:
+with open(os.path.join('cache', 'similarity.json'), 'w') as f:
     json.dump(sim, f)
 
 print('writing html files...')

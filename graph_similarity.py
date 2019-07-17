@@ -4,7 +4,7 @@ import os, json
 minconnections = 5
 maxdist = .2  # maximum distance to create a connection
 
-with open('similarity.json', 'r') as f:
+with open(os.path.join('cache', 'similarity.json'), 'r') as f:
     sim = json.load(f)
 
 d = {}
@@ -19,7 +19,8 @@ for cur in sim:
             include.add((other, cur))
         n += 1
 
-with open('similarity.dot', 'w') as f:
+dotfile = os.path.join('cache', 'similarity.dot')
+with open(dotfile, 'w') as f:
     print('graph { start=true; ', file=f)
     for (a, b), w in d.items():
         if w < maxdist or (a, b) in include:
@@ -35,4 +36,4 @@ with open('similarity.dot', 'w') as f:
             print('"%s" -- "%s" [weight=%.3f, color="%s"];' % (a, b, 1/w if w != 0 else 1e6, color), file=f)
     print('}', file=f)
 
-os.system('fdp -Tpng < similarity.dot > similarity.png')
+os.system('fdp -Tpng < %s > %s' % (dotfile, os.path.join('html', 'similarity.png'))
