@@ -54,4 +54,6 @@ The `piecedata` directory contains rotation system data.
 
 `randomizer` is a callable which takes a history, which is a list of pieces, and returns a dict mapping pieces to weights.
 
+A given history must always produce the same piece weights. This is what makes these randomizers "pure".
+
 The sum of the weights must be greater than 0 but needn't be 1. Pieces may be left out; missing pieces are assumed to have weight 0.
