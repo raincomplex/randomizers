@@ -7,7 +7,7 @@ def rand_type0(seed):
         seed = ((seed * 1103515245) + 12345) & 0xffffffff
         yield (seed >> 10) & 0x7fff
 
-class Randomizer:
+class ti:
     def __init__(self, seed=None):
         if seed == None:
             seed = int(time.time())
@@ -94,7 +94,7 @@ class Tests(unittest.TestCase):
             assert next(rng) == (v >> 10) & 0x7fff
 
     def testPieceSequence(self):
-        rng = Randomizer(demo_seed)
+        rng = ti(demo_seed)
         for piece in 'jltiojslzijtolzstiojstizojlstzilsto':
             assert rng.next() == piece
 

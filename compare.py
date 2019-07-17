@@ -40,7 +40,10 @@ def similarity():
         for k, v in list(d.items()):
             if k in exclude_compare:
                 continue
-            n = (v - mins[k]) / (maxes[k] - mins[k])
+            if maxes[k] != mins[k]:
+                n = (v - mins[k]) / (maxes[k] - mins[k])
+            else:
+                n = 0
             d[k] = n
 
     # compute distances

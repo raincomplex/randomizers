@@ -1,6 +1,6 @@
 import random
 
-class Randomizer:
+class deepbag:
     def __init__(self):
         self.bag = list('jiltsoz')
         self.rebag()

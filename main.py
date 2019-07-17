@@ -22,13 +22,20 @@ if not os.path.isdir('cache'):
 def safefile(name):
     return re.sub(r'[^a-z0-9]', '_', name)
 
+def getsequence(rand):
+    s = ''
+    r = rand()
+    for i in range(count):
+        s += r.next()
+    return s
+
 def process(t):
-    name, factory = t
+    name, rand = t
 
     cachepath = os.path.join('cache', safefile(name))
 
     s = None
-    if not clean and goodcache(name, cachepath):
+    if not clean and goodcache(rand.modname, cachepath):
         usedcache = True
         with open(cachepath, 'r') as f:
             data = json.load(f)
@@ -39,11 +46,8 @@ def process(t):
 
     if s is None:
         usedcache = False
-        r = factory()
-        s = ''
         try:
-            for i in range(count):
-                s += r.next()
+            s = getsequence(rand)
         except:
             print('error while generating for', name)
             raise
@@ -56,10 +60,10 @@ def process(t):
     print('...', name, ' (cached)' if usedcache else '')
     return (name, a)
 
-def goodcache(name, cachepath):
+def goodcache(modname, cachepath):
     if not os.path.exists(cachepath):
         return False
-    modpath = os.path.join('randos', name.split('/')[0] + '.py')
+    modpath = os.path.join('randos', modname + '.py')
     mt = os.stat(cachepath).st_mtime
     if mt < os.stat(modpath).st_mtime:
         return False
@@ -126,6 +130,7 @@ print('writing html files...')
 for (name, a) in m:
     with open(os.path.join('html', 'algo_%s.html' % safefile(name)), 'w') as f:
         print('<h1>%s</h1>' % name, file=f)
+        print('<p>%s' % load.rands[name].desc, file=f)
 
         with open(os.path.join('cache', safefile(name)), 'r') as cf:
             seq = json.load(cf)['seq'][:1000]

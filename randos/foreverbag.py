@@ -5,15 +5,15 @@ Pieces are taken from a set bag (such as JILTSOZ) in order, repeating, to fill a
 '''
 import random
 
-def factory1():
+def foreverbag_plain():
     'plain'
     return Randomizer()
 
-def factory2():
+def foreverbag_window10():
     'window=10'
     return Randomizer(windowsize=10)
 
-def factory3():
+def foreverbag_shuffle():
     'shuffle'
     return Randomizer(shuffle=True)
 

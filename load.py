@@ -1,4 +1,5 @@
 import re, glob, importlib
+import pure
 
 modulenames = glob.glob('randos/*.py')
 modulenames = [re.sub(r'randos/(.*)\.py$', lambda m: m.group(1), n) for n in modulenames]
@@ -7,18 +8,27 @@ modules = {}
 for m in modulenames:
     modules[m] = importlib.import_module('randos.' + m)
 
+def setupobj(m, r):
+    if r.__name__.endswith('_pure'):
+        r = pure.Factory(r)
+
+    r.name = r.__name__
+    r.desc = r.__doc__ or ''
+    if m.__doc__:
+        r.desc = m.__doc__ + (' -- ' + r.desc if r.desc else '')
+
+    r.modname = m.__name__.split('.')[-1]
+
+    return r
+
 rands = {}
 for name, m in sorted(modules.items()):
-    if hasattr(m, 'factory'):
-        rands[name] = m.factory
-    elif hasattr(m, 'factory1'):
-        i = 1
-        while hasattr(m, 'factory' + str(i)):
-            f = getattr(m, 'factory' + str(i))
-            n = name + '/' + (f.__doc__ or str(i))
-            rands[n] = f
-            i += 1
-    elif hasattr(m, 'Randomizer'):
-        rands[name] = m.Randomizer
-    else:
-        print('module has no factory functions or Randomizer class:', name)
+    found = 0
+    for rname in dir(m):
+        if rname.startswith(name) and re.match(r'$|\d+$|_', rname[len(name):]):
+            obj = getattr(m, rname)
+            obj = setupobj(m, obj)
+            rands[rname] = obj
+            found += 1
+    if found == 0:
+        print('found no randomizers in module:', name)

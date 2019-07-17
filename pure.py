@@ -1,9 +1,24 @@
-#!/usr/bin/env python3
 import random
-try:
-    import general.randos as randos
-except:
-    import randos
+
+def listrandos():
+    import load
+    lst = [r for r in load.rands.values() if type(r) == Factory]
+    lst.sort(key=lambda f: f.name)
+    lst = [r.getfunc() for r in lst]
+    return lst
+
+# binding r by returning a local function from a factory function causes pickling to fail ("can't pickle local"), so use a callable class instead
+class Factory:
+    def __init__(self, r):
+        self.r = r
+        self.__name__ = r.__name__
+        self.__doc__ = r.__doc__
+
+    def __call__(self):
+        return Stream(self.r)
+
+    def getfunc(self):
+        return self.r
 
 class Stream:
     def __init__(self, func, history=None):
@@ -61,37 +76,3 @@ def generatePiece(probs):
         if r < 0:
             return c
     return 'z'
-
-def formatProbs(p):
-    return '{%s}' % ', '.join('%s %.3f' % (c, p.get(c, 0)) for c in 'jiltsoz')
-
-def listrandos():
-    lst = []
-    for name in dir(randos):
-        if not name.startswith('_'):
-            lst.append(getattr(randos, name))
-    lst.sort(key=lambda f: f.__code__.co_firstlineno)
-    return lst
-
-if __name__ == '__main__':
-    import sys
-    
-    count = 10000
-    display = 80
-    showrunprob = ('-p' in sys.argv)
-    
-    for func in listrandos():
-        print(func.__name__)
-        seq = ''.join(run(func, count))
-        print(seq[:display])
-        
-        doubles = 0
-        for i in range(len(seq) - 1):
-            if seq[i] == seq[i+1]:
-                doubles += 1
-        print('doubles', doubles / count)
-        if showrunprob:
-            for c in range(7):
-                print(c, formatProbs(runprob(func, c)))
-
-        print()
