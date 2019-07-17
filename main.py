@@ -91,7 +91,6 @@ for (name, a) in m:
         if not re.search(r'_[jiltsoz]$', k):
             keys.add(k)
             compare.addelement(name, k, v)
-keys = keys - compare.exclude_compare
 
 sim = compare.similarity()
 
@@ -142,45 +141,59 @@ for (name, a) in m:
 
         for k, v in sorted(a.items()):
             if not re.search(r'_[jiltsoz]$', k):
+                lnk = '<a href="metric_%s.html">%s</a>' % (safefile(k), k)
                 if k.endswith('_graph'):
                     img = 'algo_%s_%s.png' % (safefile(name), safefile(k))
                     queuegraph(v, os.path.join('html', img))
-                    print('<p>%s:<br><img src="%s">' % (k, img), file=f)
-                else:
-                    if k not in keys:
-                        lnk = k
-                    else:
-                        lnk = '<a href="metric_%s.html">%s</a>' % (safefile(k), k)
-                    if k in precision:
-                        v = ('%%.%df' % precision[k]) % v
-                    print('<p>%s: %s' % (lnk, v), file=f)
+                    v = '<br><img src="%s">' % img
+                elif k in precision:
+                    v = ('%%.%df' % precision[k]) % v
+                print('<p>%s: %s' % (lnk, v), file=f)
 
         print('<p>similarity: (lower is more similar) <table style="margin-left: 3em">', file=f)
         for name2, dist in sorted(sim[name].items(), key=lambda t: t[1]):
             print('<tr><td>%.3f</td><td><a href="algo_%s.html">%s</a></td></tr>' % (dist, safefile(name2), name2), file=f)
         print('</table>', file=f)
 
+def metric_normal(key, f):
+    data = []
+    img = 'metric_%s.png' % safefile(key)
+
+    print('<p style="float: right"><a href="index.html">index</a>', file=f)
+    print('<h1>%s</h1>' % key, file=f)
+    print('<p>%s' % analysis.desc[key], file=f)
+    print('<p><img src="%s">' % img, file=f)
+    print('<p><table>', file=f)
+    
+    m.sort(key=lambda t: t[1][key])
+    for name, a in m:
+        v = a[key]
+        data.append(v)
+        if key in precision:
+            v = ('%%.%df' % precision[key]) % v
+        print('<tr><td style="text-align: right">%s</td><td style="padding-left: 2em"><a href="algo_%s.html">%s</a></td></tr>' % (v, safefile(name), name), file=f)
+    print('</table>', file=f)
+
+    data = [(i, v) for i, v in enumerate(data)]
+    queuegraph(data, os.path.join('html', img))
+
+def metric_graph(key, f):
+    print('<p style="float: right"><a href="index.html">index</a>', file=f)
+    print('<h1>%s</h1>' % key, file=f)
+    print('<p>%s' % analysis.desc[key], file=f)
+    
+    m.sort(key=lambda t: t[0])
+    for name, a in m:
+        lnk = '<a href="algo_%s.html">%s</a>' % (safefile(name), name)
+        img = '<img src="algo_%s_%s.png">' % (safefile(name), safefile(key))
+        print('<p>%s:<br>%s' % (lnk, img), file=f)
+
 for key in sorted(keys):
     with open(os.path.join('html', 'metric_%s.html' % safefile(key)), 'w') as f:
-        data = []
-        img = 'metric_%s.png' % safefile(key)
-
-        print('<p style="float: right"><a href="index.html">index</a>', file=f)
-        print('<h1>%s</h1>' % key, file=f)
-        print('<p>%s' % analysis.desc[key], file=f)
-        print('<p><img src="%s">' % img, file=f)
-        print('<p><table>', file=f)
-        m.sort(key=lambda t: t[1][key])
-        for name, a in m:
-            v = a[key]
-            data.append(v)
-            if key in precision:
-                v = ('%%.%df' % precision[key]) % v
-            print('<tr><td style="text-align: right">%s</td><td style="padding-left: 2em"><a href="algo_%s.html">%s</a></td></tr>' % (v, safefile(name), name), file=f)
-        print('</table>', file=f)
-
-        data = [(i, v) for i, v in enumerate(data)]
-        queuegraph(data, os.path.join('html', img))
+        if key.endswith('_graph'):
+            metric_graph(key, f)
+        else:
+            metric_normal(key, f)
 
 print('plotting graphs...')
 rungraphs()
