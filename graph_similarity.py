@@ -2,7 +2,7 @@
 import os, json
 
 minconnections = 5
-maxdist = .3  # maximum distance to create a connection
+maxdist = .2  # maximum distance to create a connection
 
 with open('similarity.json', 'r') as f:
     sim = json.load(f)

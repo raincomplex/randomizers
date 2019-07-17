@@ -1,6 +1,8 @@
 import random
 
 class Randomizer:
+    'full random but with drought protection'
+    
     def __init__(self):
         self.size = 12
         self.history = list('jiltsoz')

@@ -129,7 +129,7 @@ for (name, a) in m:
 
         with open(os.path.join('cache', safefile(name)), 'r') as cf:
             seq = json.load(cf)['seq'][:1000]
-        print('<p style="font-family: mono; word-wrap: break-word">' + seq, file=f)
+        print('<p style="font-family: monospace; word-wrap: break-word">' + seq, file=f)
 
         for k, v in sorted(a.items()):
             if not re.search(r'_[jiltsoz]$', k):
