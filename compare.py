@@ -1,8 +1,19 @@
 import math
 
-vectors = {}
+default_weight = 1
+weights = {
+    # exclude informational metrics
+    'drought_graph': 0,
+    
+    #'bagginess6': 1,
+    #'peakdrought': 1,
+}
 
-exclude_compare = set('drought_graph'.split())
+# end config
+
+
+vectors = {}
+exclude_compare = set([k for k in weights if weights[k] == 0])
 
 def addelement(name, key, value):
     if name not in vectors:
@@ -49,5 +60,5 @@ def distance(v1, v2):
     for k in v1:
         if k in exclude_compare:
             continue
-        s += (v1[k] - v2[k])**2
+        s += weights.get(k, default_weight) * (v1[k] - v2[k])**2
     return s
