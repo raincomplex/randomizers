@@ -7,7 +7,8 @@ def analyze(s):
     a = {}
     a.update(droughts(s))
     a.update(floods(s))
-    a.update(baginess(s))
+    a.update(bagginess(s))
+    a.update(distribution(s))
     a.update(evenness(s))
     a.update(entropy(s))
     a.update(follow(s))
@@ -17,7 +18,8 @@ def analyze(s):
 def droughts(seq):
     a = {}
     dc = Counter()
-    
+
+    pa = {}
     for c in 'jiltsoz':
         d = [len(s) for s in seq.split(c)]
         
@@ -33,13 +35,13 @@ def droughts(seq):
 
         peak = max(Counter(d).items(), key=lambda t: t[1])[0]
         
-        a['maxdrought_' + c] = max(d)
-        a['peakdrought_' + c] = peak
-        a['repchance_' + c] = d.count(0) / len(d)
+        pa['maxdrought_' + c] = max(d)
+        pa['peakdrought_' + c] = peak
+        pa['repchance_' + c] = d.count(0) / len(d)
     
-    a['maxdrought'] = sum(a['maxdrought_' + c] for c in 'jiltsoz') / 7
-    a['peakdrought'] = sum(a['peakdrought_' + c] for c in 'jiltsoz') / 7
-    a['repchance'] = sum(a['repchance_' + c] for c in 'jiltsoz') / 7
+    a['maxdrought'] = sum(pa['maxdrought_' + c] for c in 'jiltsoz') / 7
+    a['peakdrought'] = sum(pa['peakdrought_' + c] for c in 'jiltsoz') / 7
+    a['repchance'] = sum(pa['repchance_' + c] for c in 'jiltsoz') / 7
 
     total = sum(dc.values())
     a['drought_graph'] = [(k, v / total) for k, v in dc.items()]
@@ -57,9 +59,12 @@ def floods(seq):
 
     last = None
     flood = 0
+    mf = 0
     for c in seq:
         if c == last:
             flood += 1
+            if flood > mf:
+                mf = flood
         elif flood > 0:
             count[flood] += 1
             flood = 0
@@ -68,13 +73,15 @@ def floods(seq):
         count[flood] += 1
 
     return {
-        'flood_graph': [(k, v / len(seq)) for k, v in count.items()],
+        'maxflood': mf + 1,
+        'flood_graph': [(k + 1, v / len(seq)) for k, v in count.items()],
     }
 
+desc['maxflood'] = 'length of longest flood'
 desc['flood_graph'] = 'histogram of flood lengths'
 
 
-def baginess(seq):
+def bagginess(seq):
     a = {}
     td = 0
     tb = tb6 = 0
@@ -96,6 +103,44 @@ def baginess(seq):
 desc['diversity'] = 'average number of unique pieces per 7-piece window'
 desc['bagginess'] = 'percent of 7-piece windows which have all 7 pieces'
 desc['bagginess6'] = 'percent of 7-piece windows which have at least 6 pieces'
+
+
+def distribution(seq):
+    dist = {}
+    
+    c = Counter(seq)
+    dist[1] = [(i, c.get(p, 0) / len(seq)) for i, p in enumerate('jiltsoz')]
+
+    '''
+    c2 = Counter()
+    for i in range(len(seq) - 1):
+        c2[seq[i:i+2]] += 1
+    pairs = []
+    for a in 'jiltsoz':
+        for b in 'jiltsoz':
+            pairs.append(a + b)
+    dist2 = [(i, c2.get(p, 0) / len(seq)) for i, p in enumerate(pairs)]
+    '''
+    
+    for size in range(2, 5):
+        c = Counter()
+        n = len(seq) - (size - 1)
+        for i in range(n):
+            c[seq[i:i+size]] += 1
+        slices = sorted(c.keys())
+        dist[size] = [(i, c.get(p, 0) / n) for i, p in enumerate(slices)]
+    
+    return {
+        'distribution1_graph': dist[1],
+        'distribution2_graph': dist[2],
+        'distribution3_graph': dist[3],
+        'distribution4_graph': dist[4],
+    }
+
+desc['distribution1_graph'] = ''
+desc['distribution2_graph'] = ''
+desc['distribution3_graph'] = ''
+desc['distribution4_graph'] = ''
 
 
 def evenness(seq):
@@ -175,3 +220,8 @@ def entropy(seq):
     }
 
 desc['entropy'] = 'computed by counting unique 6-piece sequences'
+
+
+# sanity check
+for k in analyze('jiltsoz'):
+    assert k in desc, 'missing desc for "%s"' % k

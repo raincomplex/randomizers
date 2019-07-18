@@ -90,9 +90,8 @@ with open(os.path.join('html', 'index.html'), 'w') as f:
 keys = set()
 for (name, a) in m:
     for k, v in a.items():
-        if not re.search(r'_[jiltsoz]$', k):
-            keys.add(k)
-            compare.addelement(name, k, v)
+        keys.add(k)
+        compare.addelement(name, k, v)
 
 sim = compare.similarity()
 
@@ -145,16 +144,15 @@ for (name, a) in m:
             seq = json.load(cf)['seq'][:1000]
         print('<p style="font-family: monospace; word-wrap: break-word">' + seq, file=f)
 
-        for k, v in sorted(a.items()):
-            if not re.search(r'_[jiltsoz]$', k):
-                lnk = '<a href="metric_%s.html">%s</a>' % (safefile(k), k)
-                if k.endswith('_graph'):
-                    img = 'algo_%s_%s.png' % (safefile(name), safefile(k))
-                    queuegraph(v, os.path.join('html', img))
-                    v = '<br><img src="%s">' % img
-                elif k in precision:
-                    v = ('%%.%df' % precision[k]) % v
-                print('<p>%s: %s' % (lnk, v), file=f)
+        for k, v in sorted(a.items(), key=lambda t: (t[0].endswith('_graph'), t[0])):
+            lnk = '<a href="metric_%s.html">%s</a>' % (safefile(k), k)
+            if k.endswith('_graph'):
+                img = 'algo_%s_%s.png' % (safefile(name), safefile(k))
+                queuegraph(v, os.path.join('html', img))
+                v = '<br><img src="%s">' % img
+            elif k in precision:
+                v = ('%%.%df' % precision[k]) % v
+            print('<p>%s: %s' % (lnk, v), file=f)
 
         print('<p>similarity: (lower is more similar) <table style="margin-left: 3em">', file=f)
         for name2, dist in sorted(sim[name].items(), key=lambda t: t[1]):

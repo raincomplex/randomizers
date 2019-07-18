@@ -2,10 +2,6 @@ import math
 
 default_weight = 1
 weights = {
-    # exclude informational metrics
-    'drought_graph': 0,
-    'flood_graph': 0,
-    
     #'bagginess6': 1,
     #'peakdrought': 1,
 }
@@ -17,6 +13,11 @@ vectors = {}
 exclude_compare = set([k for k in weights if weights[k] == 0])
 
 def addelement(name, key, value):
+    # don't compare graphs
+    if key.endswith('_graph'):
+        weights[key] = 0
+        exclude_compare.add(key)
+
     if name not in vectors:
         vectors[name] = {}
     vectors[name][key] = value
