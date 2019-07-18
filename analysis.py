@@ -1,4 +1,4 @@
-import math
+import re, math
 from collections import Counter
 
 desc = {}
@@ -111,23 +111,12 @@ def distribution(seq):
     c = Counter(seq)
     dist[1] = [(i, c.get(p, 0) / len(seq)) for i, p in enumerate('jiltsoz')]
 
-    '''
-    c2 = Counter()
-    for i in range(len(seq) - 1):
-        c2[seq[i:i+2]] += 1
-    pairs = []
-    for a in 'jiltsoz':
-        for b in 'jiltsoz':
-            pairs.append(a + b)
-    dist2 = [(i, c2.get(p, 0) / len(seq)) for i, p in enumerate(pairs)]
-    '''
-    
     for size in range(2, 5):
         c = Counter()
         n = len(seq) - (size - 1)
         for i in range(n):
             c[seq[i:i+size]] += 1
-        slices = sorted(c.keys())
+        slices = sorted(c.keys(), key=lambda s: (not re.search(r'(.)\1', s), s))
         dist[size] = [(i, c.get(p, 0) / n) for i, p in enumerate(slices)]
     
     return {
