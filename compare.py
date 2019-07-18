@@ -4,6 +4,7 @@ default_weight = 1
 weights = {
     # exclude informational metrics
     'drought_graph': 0,
+    'flood_graph': 0,
     
     #'bagginess6': 1,
     #'peakdrought': 1,

@@ -6,6 +6,7 @@ desc = {}
 def analyze(s):
     a = {}
     a.update(droughts(s))
+    a.update(floods(s))
     a.update(baginess(s))
     a.update(evenness(s))
     a.update(entropy(s))
@@ -49,6 +50,28 @@ desc['maxdrought'] = 'longest time between two of the same piece (avg across 7 p
 desc['peakdrought'] = 'most common time between two of the same piece (avg across 7 piece types)'
 desc['repchance'] = 'chance of getting the same piece twice in a row (avg across 7 piece types)'
 desc['drought_graph'] = 'histogram of drought times'
+
+
+def floods(seq):
+    count = Counter()
+
+    last = None
+    flood = 0
+    for c in seq:
+        if c == last:
+            flood += 1
+        elif flood > 0:
+            count[flood] += 1
+            flood = 0
+        last = c
+    if flood > 0:
+        count[flood] += 1
+
+    return {
+        'flood_graph': [(k, v / len(seq)) for k, v in count.items()],
+    }
+
+desc['flood_graph'] = 'histogram of flood lengths'
 
 
 def baginess(seq):

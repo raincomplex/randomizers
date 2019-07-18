@@ -118,8 +118,8 @@ def rungraphs():
         plotgraph(*args)
 
 def plotgraph(data, imgpath):
-    highx = max(t[0] for t in data) + .5
-    highy = max(t[1] for t in data) * 1.1
+    highx = max((t[0] for t in data), default=0) + .5
+    highy = max((t[1] for t in data), default=0) * 1.1
     
     p = os.popen('''gnuplot -e 'set terminal png; set key off; plot [-.5:%f] [0:%f] "-" with boxes fill pattern 1' > %s''' % (highx, highy, imgpath), 'w')
     for k, v in sorted(data):
