@@ -27,6 +27,11 @@ class bag3(bag):
     def __init__(self):
         bag.__init__(self, 'jiltsoz'*3)
 
+class bag4(bag):
+    '28-piece bag (four of each piece)'
+    def __init__(self):
+        bag.__init__(self, 'jiltsoz'*4)
+
 def bag_pure(history):
     'standard 7-piece bag'
     used = len(history) % 7
