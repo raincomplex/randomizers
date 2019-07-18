@@ -12,6 +12,8 @@ if '--fast' in sys.argv:
 if '-c' in sys.argv:  # don't use cache
     clean = True
 
+sourcerepo = 'https://github.com/raincomplex/randomizers'
+
 # end config
 
 if not os.path.isdir('html'):
@@ -78,7 +80,7 @@ m = pool.map(process, sorted(load.rands.items()))
 
 with open(os.path.join('html', 'index.html'), 'w') as f:
     print('<h1>randomizers</h1>', file=f)
-    print('<p>for the source of this project, including the randomizers, see the <a href="https://github.com/raincomplex/randomizers">github repo</a>', file=f)
+    print('<p>for the source of this project, including the randomizers, see the <a href="%s">github repo</a>' % sourcerepo, file=f)
     print('<p>', file=f)
     for (name, a) in m:
         print('<a href="algo_%s.html">%s</a><br>' % (safefile(name), name), file=f)
@@ -131,9 +133,13 @@ print('writing html files...')
 
 for (name, a) in m:
     with open(os.path.join('html', 'algo_%s.html' % safefile(name)), 'w') as f:
+        r = load.rands[name]
+        srclink = '%s/blob/master/randos/%s.py#L%d' % (sourcerepo, r.modname, r.lineno)
+
         print('<p style="float: right"><a href="index.html">index</a>', file=f)
         print('<h1>%s</h1>' % name, file=f)
         print('<p>%s' % load.rands[name].desc, file=f)
+        print('<p><a href="%s">source code</a>' % srclink, file=f)
 
         with open(os.path.join('cache', safefile(name)), 'r') as cf:
             seq = json.load(cf)['seq'][:1000]

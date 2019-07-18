@@ -1,4 +1,4 @@
-import re, glob, importlib
+import re, glob, importlib, inspect
 import pure
 
 modulenames = glob.glob('randos/*.py')
@@ -18,6 +18,12 @@ def setupobj(m, r):
         r.desc = m.__doc__ + (' -- ' + r.desc if r.desc else '')
 
     r.modname = m.__name__.split('.')[-1]
+
+    c = r
+    if hasattr(c, 'getfunc'):
+        c = c.getfunc()
+    lines, start = inspect.getsourcelines(c)
+    r.lineno = start
 
     return r
 
