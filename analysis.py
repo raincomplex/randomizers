@@ -28,12 +28,11 @@ def droughts(seq):
             assert d[-1] == 0
             d.pop()
         
-        d.sort()
         dc.update(d)
 
         peak = max(Counter(d).items(), key=lambda t: t[1])[0]
         
-        a['maxdrought_' + c] = d[-1]
+        a['maxdrought_' + c] = max(d)
         a['peakdrought_' + c] = peak
         a['repchance_' + c] = d.count(0) / len(d)
     
