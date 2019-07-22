@@ -116,7 +116,10 @@ def distribution(seq):
         n = len(seq) - (size - 1)
         for i in range(n):
             c[seq[i:i+size]] += 1
-        slices = sorted(c.keys(), key=lambda s: c[s])
+        slices = list(sorted(c.keys(), key=lambda s: c[s]))
+        pad = 7 ** size - len(slices)
+        if pad > 0:
+            slices = [0] * pad + slices
         dist[size] = [(i, c.get(p, 0) / n) for i, p in enumerate(slices)]
     
     return {
