@@ -105,8 +105,8 @@ precision = {
     'maxdrought': 1,
     'peakdrought': 1,
     'repchance': 4,
-    'follow_coverage': 4,
-    'follow_even': 3,
+    'seq4_coverage': 4,
+    'seq4_follow': 3,
 }
 
 graphqueue = []

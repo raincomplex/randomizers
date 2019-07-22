@@ -11,7 +11,7 @@ def analyze(s):
     a.update(distribution(s))
     a.update(evenness(s))
     a.update(entropy(s))
-    a.update(follow(s))
+    a.update(sequence4(s))
     return a
 
 
@@ -108,10 +108,7 @@ desc['bagginess6'] = 'percent of 7-piece windows which have at least 6 pieces'
 def distribution(seq):
     dist = {}
     
-    c = Counter(seq)
-    dist[1] = [(i, c.get(p, 0) / len(seq)) for i, p in enumerate('jiltsoz')]
-
-    for size in range(2, 5):
+    for size in range(1, 5):
         c = Counter()
         n = len(seq) - (size - 1)
         for i in range(n):
@@ -121,13 +118,12 @@ def distribution(seq):
         if pad > 0:
             slices = [0] * pad + slices
         dist[size] = [(i, c.get(p, 0) / n) for i, p in enumerate(slices)]
-    
-    return {
-        'distribution1_graph': dist[1],
-        'distribution2_graph': dist[2],
-        'distribution3_graph': dist[3],
-        'distribution4_graph': dist[4],
-    }
+
+    r = {}
+    for i in range(1, 5):
+        r['distribution%d_graph' % i] = dist[i]
+
+    return r
 
 desc['distribution1_graph'] = ''
 desc['distribution2_graph'] = ''
@@ -161,7 +157,7 @@ desc['evenness_diff'] = 'sum of squares on distribution of pairs of different pi
 desc['evenness_same'] = 'sum of squares on distribution of pairs of same pieces (log)'
 
 
-def follow(seq):
+def sequence4(seq):
     d = {}
     size = 4
     for i in range(len(seq) - size):
@@ -185,12 +181,12 @@ def follow(seq):
         even += s
 
     return {
-        'follow_coverage': len(d) / (7 ** size),
-        'follow_even': math.log(even + 1, 10),
+        'seq4_coverage': len(d) / (7 ** size),
+        'seq4_follow': math.log(even + 1, 10),
     }
 
-desc['follow_coverage'] = 'percent of 4-piece sequences that occur'
-desc['follow_even'] = 'for each 4-piece sequence, sum of squares on the distribution of the next piece (log)'
+desc['seq4_coverage'] = 'percent of 4-piece sequences that occur'
+desc['seq4_follow'] = 'for each 4-piece sequence, sum of squares on the distribution of the next piece (log)'
 
 
 def entropy(seq):
