@@ -31,7 +31,7 @@ rands = {}
 for name, m in sorted(modules.items()):
     found = 0
     for rname in dir(m):
-        if rname.startswith(name) and re.match(r'$|\d+$|_', rname[len(name):]):
+        if rname.startswith(name) and re.match(r'\d*(_|$)', rname[len(name):]):
             obj = getattr(m, rname)
             obj = setupobj(m, obj)
             rands[rname] = obj
