@@ -111,12 +111,15 @@ def distribution(seq):
     c = Counter(seq)
     dist[1] = [(i, c.get(p, 0) / len(seq)) for i, p in enumerate('jiltsoz')]
 
+    def order(s):
+        return (not re.search(r'(.)\1', s), not re.search(r'(.)..?\1', s), s)
+
     for size in range(2, 5):
         c = Counter()
         n = len(seq) - (size - 1)
         for i in range(n):
             c[seq[i:i+size]] += 1
-        slices = sorted(c.keys(), key=lambda s: (not re.search(r'(.)\1', s), s))
+        slices = sorted(c.keys(), key=order)
         dist[size] = [(i, c.get(p, 0) / n) for i, p in enumerate(slices)]
     
     return {
