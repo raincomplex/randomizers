@@ -107,6 +107,7 @@ desc['bagginess6'] = 'percent of 7-piece windows which have at least 6 pieces'
 
 def distribution(seq):
     dist = {}
+    maxgap = {}
     
     for size in range(1, 5):
         c = Counter()
@@ -119,16 +120,18 @@ def distribution(seq):
             slices = [0] * pad + slices
         dist[size] = [(i, c.get(p, 0) / n) for i, p in enumerate(slices)]
 
+        maxgap[size] = max(dist[size][i+1][1] - dist[size][i][1] for i in range(len(slices) - 1))
+
     r = {}
     for i in range(1, 5):
         r['distribution%d_graph' % i] = dist[i]
+        r['distribution%d_maxgap' % i] = maxgap[i]
 
     return r
 
-desc['distribution1_graph'] = ''
-desc['distribution2_graph'] = ''
-desc['distribution3_graph'] = ''
-desc['distribution4_graph'] = ''
+for i in range(1, 5):
+    desc['distribution%d_graph' % i] = 'histogram of sequence distributions, sorted by probability'
+    desc['distribution%d_maxgap' % i] = ''
 
 
 def evenness(seq):
