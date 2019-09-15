@@ -1,5 +1,5 @@
 'randomizers written like weighted transition graphs'
-import math
+import math, random
 
 # function(state)
 # return {(piece, newstate): weight}
@@ -10,6 +10,7 @@ def randomizer(start):
     def d(func):
         func.start = start
         randomizers[func.__name__] = func
+        return func
     return d
 
 
@@ -71,15 +72,38 @@ def metronome(state):
     return {(c, state + 1): 1/6 for c in 'jltsoz'}
 
 
+def execute(rand, state, count):
+    'run the randomizer for count steps'
+    rmap = mapstates(rand, state)
+    
+    r = []
+    for _ in range(count):
+        trans = rmap[state]
+
+        t = sum(trans.values())
+        p = random.random() * t
+        new = None
+        for (c, ns), w in trans.items():
+            p -= w
+            if p < 0:
+                r.append(c)
+                new = ns
+                break
+        assert new is not None
+        state = new
+
+    return ''.join(r)
+
 def normalize(d):
     'takes {key: float} and returns {key: float} with the values divided by the maximum value'
     m = max(d.values())
     return {k: v / m for k, v in d.items()}
 
-def mapstates(func, state):
+def mapstates(func, start):
     'return {state: {(piece, newstate): weight}} for all states reachable from the given state'
     trans = {}  # as return value above
-    queue = [state]
+    queue = [start]
+    #reachable = set()
     while queue:
         state = queue.pop(0)
         if state in trans:
@@ -87,7 +111,12 @@ def mapstates(func, state):
         trans[state] = func(state)
         for (c, ns), p in trans[state].items():
             if p > 0 and ns not in trans:
+                #reachable.add(ns)
                 queue.append(ns)
+
+    # prune starting state(s)
+    #queue = [start]
+
     return trans
 
 def dealfromtrans(trans):
@@ -221,7 +250,7 @@ def minimize(func, start):
     ingroup = {}  # {groupnum: {state}}
     keymap = {}  # {probkey: groupnum}
 
-    trans = combine(trans)
+    #trans = combine(trans)
 
     # start with all states that look identical based on their deal probabilities
     for state, t in trans.items():
@@ -277,6 +306,8 @@ def minimize(func, start):
                 madesep = True
                 break
 
+    # FIXME produce a new trans map for the minimized func
+    
     return ingroup
 
 def getdistance(at, bt):
@@ -306,9 +337,107 @@ def dealdistance(a, b):
         #d += abs(a[p] - b[p])
     return d / 7
 
+def forward(rand, start, seq):
+    trans = mapstates(rand, start)
+    states = list(trans)
 
-import sys
+    comefrom = {}  # {s: {sp}}
+    for sp in states:
+        for c, s in trans[sp]:
+            if s not in comefrom:
+                comefrom[s] = set()
+            comefrom[s].add(sp)
 
+    # FIXME actual solution to this is to make mapstates() prune the initial unreachable states
+    #'''
+    for s in list(states):
+        if s not in comefrom:
+            # no state goes to this state
+            states.remove(s)
+            
+    for s in comefrom:
+        for sp in set(comefrom[s]):
+            if sp not in comefrom:
+                # sp was removed
+                comefrom[s].remove(sp)
+    #'''
+
+    # FIXME this probably shouldn't be flat. iterate flat distribution until it settles?
+    col = {s: 1/len(states) for s in states}
+
+    tpcache = {}  # {(sp, s, c): prob}
+    
+    for c in seq:
+        new = {}
+        for i, s in enumerate(states):
+            t = 0
+            for sp in comefrom[s]:
+                #if sp not in col:
+                #    continue
+                prob = tpcache.get((sp, s, c))
+                if prob is None:
+                    prob = getTransProb(trans[sp], s, c)
+                    tpcache[sp, s, c] = prob
+                t += col[sp] * prob
+            new[s] = t
+        col = new
+
+    return sum(col.values())
+
+def getTransProb(trans, s, d):
+    'get the probability that we transition to state s and deal piece d'
+    t = 0
+    p = 0
+    for (c, s2), w in trans.items():
+        t += w
+        if s2 == s and c == d:
+            p += w
+    return p / t
+
+
+import sys, random
+
+#seq = ''.join(random.choice('jiltsoz') for i in range(100))
+#seq = 'jiltsoz' * 10
+#seq = 'j' * 70
+
+'''
+d = {}
+z = execute(bag, bag.start, 1000)
+for i in range(len(z)-1):
+    p = z[i:i+2]
+    d[p] = d.get(p, 0) + 1
+print(d)
+exit(0)
+'''
+
+seqlist = [
+    ''.join(random.choice('jiltsoz') for i in range(70)),
+    'jiltsoz' * 10,
+    'j' * 70,
+]
+'''
+for a in 'jiltsoz':
+    for b in 'jiltsoz':
+        for c in 'jiltsoz':
+'''
+
+#'''
+for r in randomizers.values():
+    size = len(mapstates(r, r.start))
+    print(r.__name__, size)
+print()
+
+for seq in seqlist:
+    print(seq[:40])
+    for r in randomizers.values():
+        #size = len(mapstates(r, r.start))
+        p = forward(r, r.start, seq)
+        print('   ', r.__name__, p)
+    print()
+#'''
+
+'''
 states = {}
 for r in randomizers.values():
     states[r] = mapstates(r, r.start)
@@ -320,8 +449,9 @@ for i, a in enumerate(rands):
         bt = states[b]
         dist = getdistance(at, bt)
         print(a.__name__, b.__name__, dist)
+'''
 
-"""
+#"""
 if len(sys.argv) > 1:
     names = sys.argv[1:]
 else:
@@ -349,7 +479,7 @@ for name in sorted(names):
     #print('3step =', multistep(rand, rand_start, 3))
 
     print()
-"""
+#"""
 
 '''
 uniq = {}
