@@ -89,7 +89,6 @@ def execute(rand, state, count):
                 r.append(c)
                 new = ns
                 break
-        assert new is not None
         state = new
 
     return ''.join(r)
@@ -411,29 +410,29 @@ print(d)
 exit(0)
 '''
 
-seqlist = [
-    ''.join(random.choice('jiltsoz') for i in range(70)),
-    'jiltsoz' * 10,
-    'j' * 70,
-]
-'''
-for a in 'jiltsoz':
-    for b in 'jiltsoz':
-        for c in 'jiltsoz':
-'''
+seqlist = []
 
 #'''
 for r in randomizers.values():
     size = len(mapstates(r, r.start))
-    print(r.__name__, size)
+    m = minimize(r, r.start)
+    print(r.__name__, size, len(m))
+
+    seqlist.append((r.__name__, execute(r, r.start, 100)))
+
 print()
 
-for seq in seqlist:
-    print(seq[:40])
+for name, seq in seqlist:
+    print(seq[:40], name)
+    lst = []
     for r in randomizers.values():
         #size = len(mapstates(r, r.start))
         p = forward(r, r.start, seq)
-        print('   ', r.__name__, p)
+        lst.append((p, r.__name__))
+
+    lst.sort(reverse=True)
+    for p, name in lst:
+        print('   ', name, p)
     print()
 #'''
 
@@ -451,7 +450,7 @@ for i, a in enumerate(rands):
         print(a.__name__, b.__name__, dist)
 '''
 
-#"""
+"""
 if len(sys.argv) > 1:
     names = sys.argv[1:]
 else:
