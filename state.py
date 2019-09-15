@@ -246,6 +246,7 @@ def minimize(func, start):
         for (piece, state), weight in t.items():
             g = groupof[state]
             d[piece, g] = d.get((piece, g), 0) + weight
+        #d = normalize(d)  # FIXME is this necessary? it seems to have no effect
         return ','.join('%s%d=%f' % (piece, g, w) for (piece, g), w in sorted(d.items()))
 
     def updategroupof(g):
@@ -278,9 +279,49 @@ def minimize(func, start):
 
     return ingroup
 
+def getdistance(at, bt):
+    dist = 0
+    for ast, atrans in at.items():
+        aprob = dealfromtrans(atrans)
+
+        for bst, btrans in bt.items():
+            bprob = dealfromtrans(btrans)
+            #print(aprob)
+            #print(bprob)
+            #print()
+            dist += dealdistance(aprob, bprob)
+
+    return dist / (len(at) * len(bt))
+
+def dealdistance(a, b):
+    '''
+    takes two deals: {piece: weight}
+    return a number from 0 (they are the same) to 1 (they are inverses).
+    '''
+    am = sum(a.values())
+    bm = sum(b.values())
+    d = 0
+    for p in 'jiltsoz':
+        d += abs(a[p] / am - b[p] / bm)
+        #d += abs(a[p] - b[p])
+    return d / 7
+
 
 import sys
 
+states = {}
+for r in randomizers.values():
+    states[r] = mapstates(r, r.start)
+
+rands = list(randomizers.values())
+for i, a in enumerate(rands):
+    for b in rands[i+1:]:
+        at = states[a]
+        bt = states[b]
+        dist = getdistance(at, bt)
+        print(a.__name__, b.__name__, dist)
+
+"""
 if len(sys.argv) > 1:
     names = sys.argv[1:]
 else:
@@ -297,11 +338,18 @@ for name in sorted(names):
 
     m = minimize(rand, rand_start)
     print('minimized =', len(m))
-
+    '''
+    for g in m:
+        print(g)
+        for s in m[g]:
+            print('   ', s)
+    '''
+    
     #print('2step =', multistep(rand, rand_start, 2))
     #print('3step =', multistep(rand, rand_start, 3))
 
     print()
+"""
 
 '''
 uniq = {}
