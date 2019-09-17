@@ -1,25 +1,33 @@
 #!/usr/bin/python3
 import randos, util, minimizer, forward
 
+machines = []  # [(name, machine)]
 seqlist = []
+seqlen = 100
 
 for r in randos.funcs.values():
+    name = r.__name__
+    
     machine = util.findall(r, r.start)
-    size = len(machine)
-    m = minimizer.minimize(machine)
-    print(r.__name__, size, len(m))
+    #machines.append((name, machine))
+    
+    m, groupof = minimizer.minimize(machine)
+    newstart = groupof[r.start]
+    machines.append((name + '_min', m))
+    
+    print(name, len(machine), len(m))
 
-    seqlist.append((r.__name__, util.execute(machine, r.start, 100)))
+    #seqlist.append((name, util.execute(machine, r.start, seqlen)))
+    seqlist.append((name + '_min', util.execute(m, newstart, seqlen)))
 
 print()
 
 for name, seq in seqlist:
-    print(seq[:40], name)
+    print(seq[:40] + '...', name)
     lst = []
-    for r in randos.funcs.values():
-        machine = util.findall(r, r.start)
+    for name, machine in machines:
         p = forward.forward(machine, seq)
-        lst.append((p, r.__name__))
+        lst.append((p, name))
 
     lst.sort(reverse=True)
     for p, name in lst:

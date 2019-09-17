@@ -4,6 +4,7 @@ def probkey(deal):
     return ','.join('%s=%f' % (p, deal[p]) for p in 'jiltsoz')
 
 def minimize(machine):
+    'return (minimized_machine, {state: minimized_state})'
     nextgroup = 1
     ingroup = {}  # {groupnum: {state}}
     keymap = {}  # {probkey: groupnum}
@@ -27,13 +28,16 @@ def minimize(machine):
     # separate groups based on their observable transitions (with groups instead of states) until no separations can be made
 
     def getkey(state):
+        d = util.normalize(getgroupnode(state))
+        return ','.join('%s%d=%f' % (piece, g, w) for (piece, g), w in sorted(d.items()))
+
+    def getgroupnode(state):
         node = machine[state]
         d = {}  # {(piece, groupnum): weight}
         for (piece, newstate), weight in node.items():
             g = groupof[newstate]
             d[piece, g] = d.get((piece, g), 0) + weight
-        d = util.normalize(d)
-        return ','.join('%s%d=%f' % (piece, g, w) for (piece, g), w in sorted(d.items()))
+        return d
 
     def updategroupof(g):
         for state in ingroup[g]:
@@ -64,6 +68,10 @@ def minimize(machine):
 
     # produce a new machine from the groups
     
-    # TODO
-    
-    return ingroup
+    newmachine = {}
+    for g in ingroup:
+        # it doesn't matter which state we use from the group, since they're indistinguishable
+        state = next(iter(ingroup[g]))
+        newmachine[g] = getgroupnode(state)
+
+    return newmachine, groupof
