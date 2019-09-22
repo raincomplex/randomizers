@@ -26,6 +26,7 @@ for name, seq in seqlist:
     print(seq[:40] + '...', name)
     lst = []
     for name, machine in machines:
+        print(name)
         p = forward.forward(machine, seq)
         lst.append((p, name))
 

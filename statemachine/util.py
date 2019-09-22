@@ -42,7 +42,9 @@ def findall(func, start):
     return machine
 
 def prune(machine):
-    'remove states which aren\'t part of any cycles. modifies argument in-place'
+    'return machine, but remove states which aren\'t part of any cycles'
+    machine = dict(machine)
+    
     back = {}
     for state in machine:
         for _, newstate in machine[state]:
@@ -64,7 +66,17 @@ def prune(machine):
                 chop.add(newstate)
         del machine[state]
 
-    return None
+    return machine
+
+def reverse(machine):
+    'return {state: {previous_state}}'
+    d = {}
+    for sp in machine:
+        for _, s in machine[sp]:
+            if s not in d:
+                d[s] = set()
+            d[s].add(sp)
+    return d
 
 def dealfromnode(node):
     'takes {(piece, newstate): weight} and returns {piece: weight}'
