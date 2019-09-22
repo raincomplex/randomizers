@@ -68,3 +68,20 @@ def metronome(state):
     if state == 6:
         return {('i', 0): 1}
     return {(c, state + 1): 1/6 for c in 'jltsoz'}
+
+@randomizer(0)
+def flatbag(state):
+    return {('jiltsoz'[state], (state + 1) % 7): 1}
+
+@randomizer(0)
+def flipflop(state):
+    if state == 0:
+        return {
+            ('j', 0): 3, ('l', 0): 3, ('t', 0): 3, ('i', 0): 3,
+            ('j', 1): 1, ('l', 1): 1, ('t', 1): 1, ('i', 1): 1,
+        }
+    else:
+        return {
+            ('s', 1): 3, ('o', 1): 3, ('z', 1): 3, ('i', 1): 3,
+            ('s', 0): 1, ('o', 0): 1, ('z', 0): 1, ('i', 0): 1,
+        }

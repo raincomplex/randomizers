@@ -84,3 +84,13 @@ def dealfromnode(node):
     for (piece, _), weight in node.items():
         deal[piece] += weight
     return deal
+
+def deal(weights):
+    'takes {value: weight} and returns a random value'
+    r = random.random() * sum(weights.values())
+    for v, w in weights.items():
+        r -= w
+        if r < 0:
+            return v
+    # in the exceedingly rare case that we fall through
+    return random.choice(list(weights))

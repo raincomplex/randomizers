@@ -1,7 +1,9 @@
 #!/usr/bin/python3
-import randos, util, minimizer, forward
+import random
+import randos, util, minimizer, forward, steady
 
 machines = []  # [(name, machine)]
+startprobs = {}  # {name: startdict}
 seqlist = []
 seqlen = 100
 
@@ -12,13 +14,17 @@ for r in randos.funcs.values():
     #machines.append((name, machine))
     
     m, groupof = minimizer.minimize(machine)
-    newstart = groupof[r.start]
     machines.append((name + '_min', m))
+    startprobs[name + '_min'] = steady.eigen(m)
     
     print(name, len(machine), len(m))
 
     #seqlist.append((name, util.execute(machine, r.start, seqlen)))
-    seqlist.append((name + '_min', util.execute(m, newstart, seqlen)))
+
+    #start = groupof[r.start]
+    #start = random.choice(list(m.keys()))
+    start = util.deal(startprobs[name + '_min'])
+    seqlist.append((name + '_min', util.execute(m, start, seqlen)))
 
 print()
 
@@ -27,7 +33,7 @@ for name, seq in seqlist:
     lst = []
     for name, machine in machines:
         print(name)
-        p = forward.forward(machine, seq)
+        p = forward.forward(machine, seq, startprobs[name])
         lst.append((p, name))
 
     lst.sort(reverse=True)
