@@ -2,41 +2,36 @@
 import random
 import randos, util, minimizer, forward, steady
 
-machines = []  # [(name, machine)]
-startprobs = {}  # {name: startdict}
-seqlist = []
+machines = []  # [(name, machine, startprobs, seq)]
 seqlen = 100
 
 for r in randos.funcs.values():
     name = r.__name__
-    
+
     machine = util.findall(r, r.start)
-    #machines.append((name, machine))
-    
-    m, groupof = minimizer.minimize(machine)
-    machines.append((name + '_min', m))
-    startprobs[name + '_min'] = steady.eigen(m)
-    
-    print(name, len(machine), len(m))
+    if len(machine) > 10000:
+        print(name, len(machine))
+    m, _ = minimizer.minimize(machine)
 
-    #seqlist.append((name, util.execute(machine, r.start, seqlen)))
+    startprobs = steady.eigen(m)
 
-    #start = groupof[r.start]
-    #start = random.choice(list(m.keys()))
-    start = util.deal(startprobs[name + '_min'])
-    seqlist.append((name + '_min', util.execute(m, start, seqlen)))
+    start = util.deal(startprobs)
+    seq = util.execute(m, start, seqlen)
 
+    print(name, len(machine), len(m), seq[:40])
+    machines.append((name, m, startprobs, seq))
 print()
 
-for name, seq in seqlist:
-    print(seq[:40] + '...', name)
+for name1, _, _, seq in machines:
     lst = []
-    for name, machine in machines:
-        print(name)
-        p = forward.forward(machine, seq, startprobs[name])
-        lst.append((p, name))
+    center = None
+    for name2, machine, startprobs, _ in machines:
+        p = forward.forward(machine, seq, startprobs)
+        lst.append((p, name2))
+        if name2 == name1:
+            center = p
 
     lst.sort(reverse=True)
-    for p, name in lst:
-        print('   ', name, p)
+    for p, name2 in lst:
+        print(name1, name2, center - p)
     print()

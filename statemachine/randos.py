@@ -20,6 +20,13 @@ def bag(state):
         return {(c, frozenset()): 1}
     return {(c, state | frozenset((c,))): 1 for c in 'jiltsoz' if c not in state}
 
+@randomizer('x')
+def nes(state):
+    d = {}
+    for p in 'jiltsoz':
+        # 1/8 pure random OR rerolled OR straight rolled
+        d[p, p] = 2 + (1 if state != p else 0)
+    return d
 
 @randomizer('zszs')
 def tgm(state, rolls=6):
@@ -38,19 +45,6 @@ def tgm(state, rolls=6):
         p[c] += w
 
     return {(c, (state + c)[-4:]): w for c, w in p.items()}
-
-@randomizer((1,) * 7)
-def weight2(state):
-    state = tuple(w - 1 if w > 1 else 1 for w in state)
-    d = {}
-    for i, w in enumerate(state):
-        c = 'jiltsoz'[i]
-        nxt = list(state)
-        nxt[i] += 5
-        if nxt[i] > 6: nxt[i] = 6  # HACK to limit the graph size
-        nxt = tuple(nxt)
-        d[c, nxt] = 1 / w
-    return d
 
 @randomizer(None)
 def fullrandom(state):
@@ -85,3 +79,33 @@ def flipflop(state):
             ('s', 1): 3, ('o', 1): 3, ('z', 1): 3, ('i', 1): 3,
             ('s', 0): 1, ('o', 0): 1, ('z', 0): 1, ('i', 0): 1,
         }
+
+@randomizer('x')
+def repeat_last(state):
+    return {(p, p): (15 if p == state else 1) for p in 'jiltsoz'}
+
+# randomizers which are too large
+'''
+@randomizer((1,) * 7)
+def weight2(state):
+    state = tuple(w - 1 if w > 1 else 1 for w in state)
+    d = {}
+    for i, w in enumerate(state):
+        c = 'jiltsoz'[i]
+        nxt = list(state)
+        nxt[i] += 5
+        if nxt[i] > 6: nxt[i] = 6  # HACK to limit the graph size
+        nxt = tuple(nxt)
+        d[c, nxt] = 1 / w
+    return d
+
+@randomizer('jiltsoz')
+def wet(state):
+    for c in 'jiltsoz':
+        if c not in state:
+            return {(c, state[-6:] + c): 1}
+    p = {}
+    for c in 'jiltsoz':
+        p[c, state[-6:] + c] = 1
+    return p
+'''

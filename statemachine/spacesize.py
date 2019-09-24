@@ -3,10 +3,12 @@ import math, random
 import randos, minimizer, util, forward, steady
 
 def main():
-    seqlen = 7
+    seqlen = 100
     print('seqlen', seqlen)
     print()
 
+    full = 7 ** seqlen
+    
     for name in randos.funcs:
         r = randos.funcs[name]
         machine = util.findall(r, r.start)
@@ -14,8 +16,10 @@ def main():
 
         print(name)
         if seqlen <= 8 and len(machine) < 200:
-            print('exact', exact(machine, seqlen))
-        print('heuristic', heuristic(machine, seqlen))
+            x = exact(machine, seqlen)
+            print('exact', x, x / full)
+        small, avg, large = heuristic(machine, seqlen)
+        print('heuristic', small / full, avg / full, large / full)
         print()
 
 
@@ -32,7 +36,6 @@ def exact(machine, seqlen):
         countpossible(state, '')
 
     return len(possible)
-    print('possible', len(possible), math.log(len(possible), 2))
 
 
 def heuristic(machine, seqlen, count=100):
