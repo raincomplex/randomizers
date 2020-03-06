@@ -13,9 +13,9 @@ def setupobj(m, r):
         r = pure.Factory(r)
 
     r.name = r.__name__
-    r.desc = r.__doc__ or ''
+    r.desc = (r.__doc__ or '').strip()
     if m.__doc__:
-        r.desc = m.__doc__ + (' -- ' + r.desc if r.desc else '')
+        r.desc = m.__doc__.strip() + ('\n\n' + r.desc if r.desc else '')
 
     r.modname = m.__name__.split('.')[-1]
 

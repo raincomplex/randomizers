@@ -77,6 +77,7 @@ def goodcache(modname, cachepath):
 
 pool = Pool(cpu_count())
 m = pool.map(process, sorted(load.rands.items()))
+pool.close()
 
 with open(os.path.join('html', 'index.html'), 'w') as f:
     print('<h1>randomizers</h1>', file=f)
@@ -137,7 +138,7 @@ for (name, a) in m:
 
         print('<p style="float: right"><a href="index.html">index</a>', file=f)
         print('<h1>%s</h1>' % name, file=f)
-        print('<p>%s' % load.rands[name].desc, file=f)
+        print('<p>%s' % load.rands[name].desc.replace('\n', '<br>'), file=f)
         print('<p><a href="%s">source code</a>' % srclink, file=f)
 
         with open(os.path.join('cache', safefile(name)), 'r') as cf:
