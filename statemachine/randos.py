@@ -25,7 +25,7 @@ def nes(state):
     d = {}
     for p in 'jiltsoz':
         # 1/8 pure random OR rerolled OR straight rolled
-        d[p, p] = 2 + (1 if state != p else 0)
+        d[p, p] = 2 + (7 if state != p else 0)
     return d
 
 @randomizer('zszs')
