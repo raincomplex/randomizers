@@ -29,9 +29,17 @@ class shirts:
             self.bag = []
         return p
 
-class shirts2(shirts):
+class shirts_g3w7(shirts):
     def __init__(self):
-        super().__init__(bagcount=2, grab=7, wash=7)
+        super().__init__(bagcount=2, grab=3, wash=7)
+
+class shirts_g1w3(shirts):
+    def __init__(self):
+        super().__init__(bagcount=2, grab=1, wash=3)
+
+class shirts_g1w7(shirts):
+    def __init__(self):
+        super().__init__(bagcount=2, grab=1, wash=7)
 
 
 class shirts_smooth:
@@ -62,6 +70,18 @@ class shirts_smooth:
         self.addrack()
         return p
 
-class shirts_smooth2(shirts_smooth):
+class shirts_smooth_c8(shirts_smooth):
     def __init__(self):
-        super().__init__(count=14, grab=7)
+        super().__init__(count=8)
+
+class shirts_smooth_c10(shirts_smooth):
+    def __init__(self):
+        super().__init__(count=10)
+
+class shirts_smooth_c12(shirts_smooth):
+    def __init__(self):
+        super().__init__(count=12)
+
+class shirts_smooth_c14(shirts_smooth):
+    def __init__(self):
+        super().__init__(count=14)
